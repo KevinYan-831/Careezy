@@ -15,6 +15,7 @@ import {
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import WorkIcon from '@mui/icons-material/Work';
+import CareezyLogo from '../assets/Careezy-Logo.png';
 
 const NavBar: React.FC = () => {
   const navigate = useNavigate();
@@ -50,23 +51,32 @@ const NavBar: React.FC = () => {
       <Container maxWidth="xl">
         <Toolbar sx={{ px: { xs: 0, sm: 2 } }}>
         {/* Logo and Brand */}
-        <WorkIcon sx={{ mr: 1 }} />
-        <Typography
-          variant="h6"
-          component={Link}
-          to="/"
-          sx={{
-            mr: 4,
-            fontWeight: 700,
-            color: 'inherit',
-            textDecoration: 'none',
-            '&:hover': {
+        <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
+          <img 
+            src={CareezyLogo} 
+            alt="Careezy Logo" 
+            style={{ 
+              height: '40px', 
+              width: 'auto',
+              marginRight: '12px'
+            }} 
+          />
+          <Typography
+            variant="h6"
+            component={Link}
+            to="/"
+            sx={{
+              fontWeight: 700,
+              color: 'inherit',
               textDecoration: 'none',
-            },
-          }}
-        >
-          Careezy
-        </Typography>
+              '&:hover': {
+                textDecoration: 'none',
+              },
+            }}
+          >
+            Careezy
+          </Typography>
+        </Box>
 
         {/* Spacer to push right-side content to the right */}
         <Box sx={{ flexGrow: 1 }} />

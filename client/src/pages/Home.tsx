@@ -18,6 +18,7 @@ import {
   Collapse,
   useScrollTrigger,
 } from '@mui/material';
+import CareezyLogo from '../assets/Careezy-Logo.png';
 
 // Animated Counter Component
 const AnimatedCounter = ({ end, duration = 2000, suffix = '', prefix = '' }) => {
@@ -217,50 +218,86 @@ const Home: React.FC = () => {
           <ResponsiveGridItem xs={12} md={6}>
               <Fade in={isVisible} timeout={1000}>
                 <Box>
-                  <Typography
-                    variant="h1"
-                    component="h1"
-                    sx={{
-                      color: 'white',
-                      mb: 2,
-                      fontWeight: 900,
-                      fontSize: { xs: '3rem', md: '4rem', lg: '5rem' },
-                      textShadow: '0 4px 20px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3)',
-                      letterSpacing: '-0.02em',
-                      lineHeight: 1.1,
-                      textAlign: { xs: 'center', md: 'left' },
-                    }}
-                  >
-                    Careezy
-                  </Typography>
+                  {/* Hero Title Section */}
+                  <Box sx={{ 
+                    textAlign: { xs: 'center', md: 'left' },
+                    mb: 4 
+                  }}>
+                    <Typography
+                      variant="h1"
+                      component="h1"
+                      sx={{
+                        color: '#f8fafc',
+                        fontWeight: 900,
+                        fontSize: { xs: '3.5rem', md: '4.5rem', lg: '6rem' },
+                        textShadow: '0 4px 20px rgba(0,0,0,0.8), 0 2px 12px rgba(0,0,0,0.6)',
+                        letterSpacing: '-0.02em',
+                        lineHeight: 1.1,
+                        fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                        textRendering: 'optimizeLegibility',
+                        WebkitFontSmoothing: 'antialiased',
+                        MozOsxFontSmoothing: 'grayscale',
+                        mb: 2
+                      }}
+                    >
+                      Your Career Journey
+                    </Typography>
+                    <Typography
+                      variant="h2"
+                      component="h2"
+                      sx={{
+                        color: '#e2e8f0',
+                        fontWeight: 700,
+                        fontSize: { xs: '2rem', md: '2.5rem', lg: '3rem' },
+                        textShadow: '0 3px 12px rgba(0,0,0,0.6)',
+                        letterSpacing: '-0.01em',
+                        lineHeight: 1.2,
+                        fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                        background: 'linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text'
+                      }}
+                    >
+                      Starts Here
+                    </Typography>
+                  </Box>
                   <Typography
                     variant="h4"
                     sx={{
-                      color: 'rgba(255,255,255,0.95)',
-                      mb: 2,
+                      color: '#f1f5f9',
+                      mb: 3,
                       fontWeight: 600,
-                      lineHeight: 1.3,
-                      fontSize: { xs: '1.25rem', md: '1.5rem', lg: '1.75rem' },
-                      textShadow: '0 2px 8px rgba(0,0,0,0.4)',
-                      letterSpacing: '0.01em',
+                      lineHeight: 1.4,
+                      fontSize: { xs: '1.4rem', md: '1.8rem', lg: '2rem' },
+                      textShadow: '0 3px 12px rgba(0,0,0,0.6), 0 1px 4px rgba(0,0,0,0.4)',
+                      letterSpacing: '0.005em',
                       textAlign: { xs: 'center', md: 'left' },
+                      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                      textRendering: 'optimizeLegibility',
+                      WebkitFontSmoothing: 'antialiased',
+                      MozOsxFontSmoothing: 'grayscale',
                     }}
                   >
-                    Your entire career journey in one place
+                    Build resumes, find internships, get AI guidance
                   </Typography>
                   <Grow in={isVisible} timeout={1500}>
                     <Typography
                       variant="h6"
                       sx={{
-                        color: 'rgba(255,255,255,0.9)',
-                        mb: 4,
-                        fontWeight: 400,
-                        fontSize: { xs: '1.1rem', md: '1.25rem', lg: '1.4rem' },
-                        lineHeight: 1.6,
-                        textShadow: '0 2px 8px rgba(0,0,0,0.4)',
-                        letterSpacing: '0.01em',
-                        maxWidth: '600px',
+                        color: '#e2e8f0',
+                        mb: 5,
+                        fontWeight: 500,
+                        fontSize: { xs: '1.3rem', md: '1.5rem', lg: '1.7rem' },
+                        lineHeight: 1.8,
+                        textShadow: '0 3px 10px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3)',
+                        letterSpacing: '0.005em',
+                        maxWidth: '650px',
                         textAlign: { xs: 'center', md: 'left' },
+                        fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                        textRendering: 'optimizeLegibility',
+                        WebkitFontSmoothing: 'antialiased',
+                        MozOsxFontSmoothing: 'grayscale',
                       }}
                     >
                       Build professional resumes, discover internships, and get AI-powered career guidance all in one platform
@@ -269,9 +306,9 @@ const Home: React.FC = () => {
                   <Zoom in={isVisible} timeout={1800}>
                     <Stack 
                       direction={{ xs: 'column', sm: 'row' }} 
-                      spacing={2} 
+                      spacing={3} 
                       sx={{ 
-                        mb: 4,
+                        mb: 6,
                         alignItems: { xs: 'center', md: 'flex-start' },
                         justifyContent: { xs: 'center', md: 'flex-start' },
                       }}
@@ -282,18 +319,23 @@ const Home: React.FC = () => {
                         onClick={() => navigate('/register')}
                         endIcon={<ArrowForwardIcon />}
                         sx={{
-                          bgcolor: 'white',
-                          color: 'primary.main',
-                          fontWeight: 700,
-                          px: 5,
-                          py: 2,
-                          fontSize: '1.2rem',
+                          bgcolor: '#ffffff',
+                          color: '#1e40af',
+                          fontWeight: 900,
+                          px: 6,
+                          py: 2.5,
+                          fontSize: '1.4rem',
                           borderRadius: 3,
                           textTransform: 'none',
-                          boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                          boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
                           position: 'relative',
                           overflow: 'hidden',
                           animation: 'pulse 2s ease-in-out infinite',
+                          fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                          textRendering: 'optimizeLegibility',
+                          WebkitFontSmoothing: 'antialiased',
+                          MozOsxFontSmoothing: 'grayscale',
+                          letterSpacing: '0.02em',
                           '&::before': {
                             content: '""',
                             position: 'absolute',
@@ -325,17 +367,23 @@ const Home: React.FC = () => {
                         size="large"
                         onClick={() => navigate('/resume-builder')}
                         sx={{
-                          borderColor: 'white',
-                          color: 'white',
-                          fontWeight: 600,
-                          px: 5,
-                          py: 2,
-                          fontSize: '1.2rem',
+                          borderColor: '#ffffff',
+                          color: '#ffffff',
+                          fontWeight: 800,
+                          px: 6,
+                          py: 2.5,
+                          fontSize: '1.4rem',
                           borderRadius: 3,
                           textTransform: 'none',
-                          borderWidth: '2px',
+                          borderWidth: '3px',
                           position: 'relative',
                           overflow: 'hidden',
+                          fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                          textRendering: 'optimizeLegibility',
+                          WebkitFontSmoothing: 'antialiased',
+                          MozOsxFontSmoothing: 'grayscale',
+                          letterSpacing: '0.02em',
+                          textShadow: '0 2px 4px rgba(0,0,0,0.5)',
                           '&::before': {
                             content: '""',
                             position: 'absolute',
@@ -380,7 +428,12 @@ const Home: React.FC = () => {
                         <Typography variant="body1" sx={{ 
                           color: 'white',
                           fontWeight: 600,
-                          fontSize: '1.1rem'
+                          fontSize: '1.1rem',
+                          fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                          textRendering: 'optimizeLegibility',
+                          WebkitFontSmoothing: 'antialiased',
+                          MozOsxFontSmoothing: 'grayscale',
+                          letterSpacing: '0.005em'
                         }}>
                           4.9/5 from 1000+ students
                         </Typography>
@@ -404,7 +457,12 @@ const Home: React.FC = () => {
                         <Typography variant="body1" sx={{ 
                           color: 'white',
                           fontWeight: 600,
-                          fontSize: '1.1rem'
+                          fontSize: '1.1rem',
+                          fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                          textRendering: 'optimizeLegibility',
+                          WebkitFontSmoothing: 'antialiased',
+                          MozOsxFontSmoothing: 'grayscale',
+                          letterSpacing: '0.005em'
                         }}>
                           95% success rate
                         </Typography>
@@ -430,10 +488,13 @@ const Home: React.FC = () => {
                     sx={{
                       position: 'relative',
                       width: '100%',
-                      height: '100%',
+                      height: '500px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      overflow: 'hidden',
+                      mt: 4,
+                      mb: 4,
                     }}
                   >
                     {features.map((feature, index) => (
@@ -474,17 +535,27 @@ const Home: React.FC = () => {
                             {feature.icon}
                           </Box>
                           <Typography variant="h6" gutterBottom sx={{
-                            fontWeight: 600,
+                            fontWeight: 700,
                             color: 'text.primary',
                             mb: 1.5,
-                            fontSize: '1.2rem'
+                            fontSize: '1.3rem',
+                            fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                            textRendering: 'optimizeLegibility',
+                            WebkitFontSmoothing: 'antialiased',
+                            MozOsxFontSmoothing: 'grayscale',
+                            letterSpacing: '0.005em'
                           }}>
                             {feature.title}
                           </Typography>
                           <Typography variant="body2" color="text.secondary" sx={{ 
                             mb: 2,
-                            lineHeight: 1.5,
-                            fontSize: '0.9rem'
+                            lineHeight: 1.6,
+                            fontSize: '1rem',
+                            fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                            textRendering: 'optimizeLegibility',
+                            WebkitFontSmoothing: 'antialiased',
+                            MozOsxFontSmoothing: 'grayscale',
+                            fontWeight: 400
                           }}>
                             {feature.description}
                           </Typography>
@@ -564,15 +635,16 @@ const Home: React.FC = () => {
           <Slide direction="up" in={isVisible} timeout={1000}>
             <Typography variant="h2" component="h2" gutterBottom sx={{
               fontWeight: 900,
-              fontSize: { xs: '2.8rem', md: '4rem' },
-              background: 'linear-gradient(45deg, #2563eb 30%, #7c3aed 90%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              fontSize: { xs: '3rem', md: '4.2rem' },
+              color: '#1e293b',
               mb: 3,
-              textShadow: '0 4px 20px rgba(37,99,235,0.3)',
+              textShadow: '0 4px 20px rgba(30,41,59,0.3)',
               letterSpacing: '-0.02em',
               position: 'relative',
+              fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+              textRendering: 'optimizeLegibility',
+              WebkitFontSmoothing: 'antialiased',
+              MozOsxFontSmoothing: 'grayscale',
               '&::after': {
                 content: '""',
                 position: 'absolute',
@@ -597,26 +669,58 @@ const Home: React.FC = () => {
             <Typography variant="h6" color="text.secondary" sx={{ 
               maxWidth: 700, 
               mx: 'auto',
-              fontSize: '1.3rem',
-              lineHeight: 1.7,
+              fontSize: '1.4rem',
+              lineHeight: 1.8,
               fontWeight: 500,
               textShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+              textRendering: 'optimizeLegibility',
+              WebkitFontSmoothing: 'antialiased',
+              MozOsxFontSmoothing: 'grayscale',
+              letterSpacing: '0.005em'
             }}>
               From building standout resumes to landing your dream internship, we've got every step covered
             </Typography>
           </Grow>
         </Box>
 
-        <ResponsiveGrid spacing={4} justifyContent="center">
-          {features.map((feature, index) => (
-            <ResponsiveGridItem xs={12} sm={6} md={6} lg={3} key={index}>
-              <Fade in={isVisible} timeout={1000 + index * 200}>
+        {/* Carousel Container */}
+        <Box sx={{ 
+          position: 'relative',
+          width: '100%',
+          height: '500px',
+          overflow: 'hidden',
+          borderRadius: 4,
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
+        }}>
+          {/* Carousel Track */}
+          <Box sx={{
+            display: 'flex',
+            width: '400%',
+            height: '100%',
+            transform: `translateX(-${currentFeature * 25}%)`,
+            transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}>
+            {features.map((feature, index) => (
+              <Box key={index} sx={{ 
+                width: '25%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                p: 4
+              }}>
                 <Card
                   onMouseEnter={() => setHoveredCard(index)}
                   onMouseLeave={() => setHoveredCard(null)}
                   onClick={() => navigate(feature.path)}
                   sx={{
-                    height: '100%',
+                    width: '90%',
+                    maxWidth: '400px',
+                    height: '400px',
                     p: 4,
                     textAlign: 'center',
                     cursor: 'pointer',
@@ -626,6 +730,9 @@ const Home: React.FC = () => {
                     position: 'relative',
                     overflow: 'hidden',
                     background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
                     '&::before': {
                       content: '""',
                       position: 'absolute',
@@ -638,25 +745,9 @@ const Home: React.FC = () => {
                       transition: 'opacity 0.4s ease',
                       zIndex: 0,
                     },
-                    '&::after': {
-                      content: '""',
-                      position: 'absolute',
-                      top: '-50%',
-                      left: '-50%',
-                      width: '200%',
-                      height: '200%',
-                      background: `conic-gradient(from 0deg, transparent, ${feature.color}20, transparent)`,
-                      opacity: hoveredCard === index ? 1 : 0,
-                      animation: hoveredCard === index ? 'rotate 3s linear infinite' : 'none',
-                      zIndex: 0,
-                    },
                     '&:hover': {
-                      transform: 'translateY(-16px) scale(1.03) rotateX(5deg)',
-                      boxShadow: `0 30px 60px rgba(0,0,0,0.2), 0 0 30px ${feature.color}30`,
-                    },
-                    '@keyframes rotate': {
-                      '0%': { transform: 'rotate(0deg)' },
-                      '100%': { transform: 'rotate(360deg)' },
+                      transform: 'translateY(-8px) scale(1.02)',
+                      boxShadow: `0 20px 40px rgba(0,0,0,0.15), 0 0 20px ${feature.color}30`,
                     },
                   }}
                 >
@@ -675,7 +766,9 @@ const Home: React.FC = () => {
                     zIndex: 1,
                     color: hoveredCard === index ? feature.color : 'text.primary',
                     transition: 'color 0.3s ease',
-                    fontSize: '1.3rem'
+                    fontSize: '1.4rem',
+                    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                    mb: 2
                   }}>
                     {feature.title}
                   </Typography>
@@ -684,7 +777,9 @@ const Home: React.FC = () => {
                     position: 'relative',
                     zIndex: 1,
                     lineHeight: 1.6,
-                    fontSize: '1rem'
+                    fontSize: '1rem',
+                    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                    flex: 1
                   }}>
                     {feature.description}
                   </Typography>
@@ -700,7 +795,10 @@ const Home: React.FC = () => {
                       zIndex: 1,
                       fontWeight: 600,
                       py: 1.5,
+                      fontSize: '1rem',
                       transition: 'all 0.3s ease',
+                      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                      textTransform: 'none',
                       '&:hover': {
                         transform: 'scale(1.05)',
                       }
@@ -709,10 +807,40 @@ const Home: React.FC = () => {
                     {feature.action}
                   </Button>
                 </Card>
-              </Fade>
-            </ResponsiveGridItem>
-          ))}
-        </ResponsiveGrid>
+              </Box>
+            ))}
+          </Box>
+          
+          {/* Carousel Indicators */}
+          <Box sx={{
+            position: 'absolute',
+            bottom: 20,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            gap: 1,
+            zIndex: 2
+          }}>
+            {features.map((_, index) => (
+              <Box
+                key={index}
+                onClick={() => setCurrentFeature(index)}
+                sx={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: '50%',
+                  bgcolor: currentFeature === index ? 'white' : 'rgba(255,255,255,0.5)',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    bgcolor: 'white',
+                    transform: 'scale(1.2)'
+                  }
+                }}
+              />
+            ))}
+          </Box>
+        </Box>
       </Section>
 
         {/* About Section */}
@@ -720,12 +848,14 @@ const Home: React.FC = () => {
           <Fade in={trigger} timeout={800}>
             <Typography variant="h2" component="h2" gutterBottom sx={{
               fontWeight: 800,
-              fontSize: { xs: '2.5rem', md: '3.5rem' },
-              background: 'linear-gradient(45deg, #1e293b 30%, #475569 90%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              mb: 4
+              fontSize: { xs: '2.8rem', md: '3.8rem' },
+              color: '#1e293b',
+              mb: 4,
+              fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+              textRendering: 'optimizeLegibility',
+              WebkitFontSmoothing: 'antialiased',
+              MozOsxFontSmoothing: 'grayscale',
+              letterSpacing: '-0.01em'
             }}>
               About Careezy
             </Typography>
@@ -735,10 +865,15 @@ const Home: React.FC = () => {
               mb: 6, 
               maxWidth: '900px', 
               mx: 'auto',
-              fontSize: '1.25rem',
-              lineHeight: 1.7,
-              fontWeight: 400,
-              textAlign: 'center'
+              fontSize: '1.35rem',
+              lineHeight: 1.8,
+              fontWeight: 500,
+              textAlign: 'center',
+              fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+              textRendering: 'optimizeLegibility',
+              WebkitFontSmoothing: 'antialiased',
+              MozOsxFontSmoothing: 'grayscale',
+              letterSpacing: '0.005em'
             }}>
               Careezy is the ultimate platform for students and recent graduates to accelerate their career journey. 
               We combine cutting-edge AI technology with comprehensive career tools to help you build standout resumes, 
@@ -766,21 +901,36 @@ const Home: React.FC = () => {
                     <Typography variant="h3" gutterBottom sx={{
                       fontWeight: 900,
                       color: stat.color,
-                      fontSize: { xs: '2.5rem', md: '3rem' },
-                      mb: 2
+                      fontSize: { xs: '2.8rem', md: '3.2rem' },
+                      mb: 2,
+                      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                      textRendering: 'optimizeLegibility',
+                      WebkitFontSmoothing: 'antialiased',
+                      MozOsxFontSmoothing: 'grayscale'
                     }}>
                       <AnimatedCounter end={stat.number} duration={2000} />
                     </Typography>
                     <Typography variant="h5" gutterBottom sx={{
                       fontWeight: 700,
                       color: 'text.primary',
-                      mb: 2
+                      mb: 2,
+                      fontSize: '1.4rem',
+                      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                      textRendering: 'optimizeLegibility',
+                      WebkitFontSmoothing: 'antialiased',
+                      MozOsxFontSmoothing: 'grayscale',
+                      letterSpacing: '0.005em'
                     }}>
                       {stat.title}
                     </Typography>
                     <Typography color="text.secondary" sx={{
-                      fontSize: '1rem',
-                      lineHeight: 1.6
+                      fontSize: '1.1rem',
+                      lineHeight: 1.7,
+                      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                      textRendering: 'optimizeLegibility',
+                      WebkitFontSmoothing: 'antialiased',
+                      MozOsxFontSmoothing: 'grayscale',
+                      fontWeight: 400
                     }}>
                       {stat.desc}
                     </Typography>
@@ -791,198 +941,46 @@ const Home: React.FC = () => {
           </ResponsiveGrid>
         </Section>
 
-        {/* Stats Section */}
-        <Section centerContent background="linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
-            <Fade in={trigger} timeout={800}>
-              <Typography variant="h3" component="h2" gutterBottom sx={{
-                fontWeight: 800,
-                color: 'white',
-                fontSize: { xs: '2rem', md: '3rem' },
-                mb: 3
-              }}>
-                Trusted by Thousands
-              </Typography>
-            </Fade>
-            <Fade in={trigger} timeout={1000}>
-              <Typography variant="h6" sx={{
-                color: 'rgba(255,255,255,0.9)',
-                fontSize: '1.2rem',
-                maxWidth: '600px',
-                mx: 'auto'
-              }}>
-                Join the growing community of successful students and professionals
-              </Typography>
-            </Fade>
-          </Box>
-          <ResponsiveGrid spacing={4} textAlign="center" justifyContent="center">
-            {[
-              { number: '50K+', label: 'Resumes Created', icon: <BuildIcon />, color: '#fbbf24' },
-              { number: '10K+', label: 'Internships Listed', icon: <SearchIcon />, color: '#10b981' },
-              { number: '95%', label: 'Success Rate', icon: <TrendingUpIcon />, color: '#f59e0b' },
-              { number: '24/7', label: 'AI Support', icon: <SpeedIcon />, color: '#ef4444' },
-            ].map((stat, index) => (
-              <ResponsiveGridItem xs={6} sm={3} md={3} key={index}>
-              <Zoom in={trigger} timeout={1400 + index * 200}>
-                <Box sx={{
-                  p: 3,
-                  borderRadius: 2,
-                  bgcolor: 'rgba(255,255,255,0.1)',
-                  backdropFilter: 'blur(10px)',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    bgcolor: 'rgba(255,255,255,0.15)',
-                  }
-                }}>
-                  <Box sx={{ 
-                    mb: 2, 
-                    color: stat.color,
-                    fontSize: 40,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                  }}>
-                    {stat.icon}
-                  </Box>
-                  <Typography variant="h3" gutterBottom sx={{
-                    fontWeight: 900,
-                    color: 'white',
-                    fontSize: { xs: '2rem', md: '2.5rem' },
-                    mb: 2
-                  }}>
-                    <AnimatedCounter end={stat.number} duration={2500} />
-                  </Typography>
-                  <Typography variant="h6" sx={{
-                    color: 'rgba(255,255,255,0.9)',
-                    fontWeight: 600,
-                    fontSize: '1.1rem'
-                  }}>
-                    {stat.label}
-                  </Typography>
-                </Box>
-              </Zoom>
-            </ResponsiveGridItem>
-          ))}
-        </ResponsiveGrid>
-      </Section>
-
-      {/* CTA Section */}
-      <Section
-        background="linear-gradient(135deg, #1e293b 0%, #334155 100%)"
-        centerContent
-        containerMaxWidth="md"
-        sx={{
-          position: 'relative',
-          overflow: 'hidden',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'radial-gradient(circle at 30% 70%, rgba(59, 130, 246, 0.3) 0%, transparent 50%)',
-            zIndex: 0,
-          }
-        }}
-      >
-          <Box sx={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-            <Fade in={trigger} timeout={800}>
-              <Typography variant="h2" component="h2" sx={{ 
-                color: 'white', 
-                mb: 3,
-                fontWeight: 800,
-                fontSize: { xs: '2.5rem', md: '3.5rem' },
-                textShadow: '0 4px 8px rgba(0,0,0,0.3)'
-              }}>
-                Ready to launch your career?
-              </Typography>
-            </Fade>
-            <Fade in={trigger} timeout={1000}>
-              <Typography variant="h6" sx={{ 
-                color: 'rgba(255,255,255,0.9)', 
-                mb: 6,
-                fontSize: '1.25rem',
-                lineHeight: 1.6,
-                maxWidth: '600px',
-                mx: 'auto'
-              }}>
-                Join thousands of students who have successfully landed their dream internships with Careezy
-              </Typography>
-            </Fade>
-          </Box>
-          <Zoom in={trigger} timeout={1200}>
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} justifyContent="center" sx={{ position: 'relative', zIndex: 1 }}>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={() => navigate('/register')}
-                endIcon={<ArrowForwardIcon />}
-                sx={{
-                  bgcolor: 'white',
-                  color: 'primary.main',
-                  px: 5,
-                  py: 2,
-                  fontSize: '1.2rem',
-                  fontWeight: 700,
-                  borderRadius: 3,
-                  boxShadow: '0 8px 32px rgba(255,255,255,0.3)',
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&:hover': {
-                    bgcolor: 'grey.100',
-                    transform: 'translateY(-6px) scale(1.05)',
-                    boxShadow: '0 16px 48px rgba(255,255,255,0.4)',
-                  },
-                  '&:active': {
-                    transform: 'translateY(-3px) scale(1.02)',
-                  },
-                }}
-              >
-                Start Building Your Future
-              </Button>
-              <Button
-                variant="outlined"
-                size="large"
-                onClick={() => navigate('/login')}
-                sx={{
-                  borderColor: 'white',
-                  color: 'white',
-                  px: 5,
-                  py: 2,
-                  fontSize: '1.2rem',
-                  fontWeight: 700,
-                  borderRadius: 3,
-                  borderWidth: 2,
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&:hover': {
-                    borderColor: 'white',
-                    bgcolor: 'rgba(255,255,255,0.15)',
-                    transform: 'translateY(-6px) scale(1.05)',
-                    boxShadow: '0 16px 48px rgba(255,255,255,0.2)',
-                  },
-                  '&:active': {
-                    transform: 'translateY(-3px) scale(1.02)',
-                  },
-                }}
-              >
-                Sign In
-              </Button>
-            </Stack>
-          </Zoom>
-      </Section>
-
       {/* Contact Section */}
       <Section background="grey.900">
           <ResponsiveGrid spacing={6}>
             <ResponsiveGridItem xs={12} md={8}>
-              <Typography variant="h4" sx={{ color: 'white', mb: 2 }}>
+              <Typography variant="h4" sx={{ 
+                color: 'white', 
+                mb: 2,
+                fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                textRendering: 'optimizeLegibility',
+                WebkitFontSmoothing: 'antialiased',
+                MozOsxFontSmoothing: 'grayscale',
+                fontWeight: 700,
+                fontSize: '2.2rem'
+              }}>
                 Careezy
               </Typography>
-              <Typography variant="body1" sx={{ color: 'grey.400', mb: 4, maxWidth: 500 }}>
+              <Typography variant="body1" sx={{ 
+                color: 'grey.400', 
+                mb: 4, 
+                maxWidth: 500,
+                fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                textRendering: 'optimizeLegibility',
+                WebkitFontSmoothing: 'antialiased',
+                MozOsxFontSmoothing: 'grayscale',
+                fontSize: '1.1rem',
+                lineHeight: 1.6
+              }}>
                 Empowering students to build successful careers through AI-powered tools, 
                 comprehensive internship discovery, and personalized career guidance.
               </Typography>
-              <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>
+              <Typography variant="h6" sx={{ 
+                color: 'white', 
+                mb: 2,
+                fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                textRendering: 'optimizeLegibility',
+                WebkitFontSmoothing: 'antialiased',
+                MozOsxFontSmoothing: 'grayscale',
+                fontWeight: 600,
+                fontSize: '1.3rem'
+              }}>
                 Connect with us
               </Typography>
               <Stack direction="row" spacing={2}>
@@ -1016,7 +1014,16 @@ const Home: React.FC = () => {
               </Stack>
             </ResponsiveGridItem>
             <ResponsiveGridItem xs={12} md={4}>
-              <Typography variant="h6" sx={{ color: 'white', mb: 3 }}>
+              <Typography variant="h6" sx={{ 
+                color: 'white', 
+                mb: 3,
+                fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                textRendering: 'optimizeLegibility',
+                WebkitFontSmoothing: 'antialiased',
+                MozOsxFontSmoothing: 'grayscale',
+                fontWeight: 600,
+                fontSize: '1.3rem'
+              }}>
                 Quick Links
               </Typography>
               <Stack spacing={1}>
