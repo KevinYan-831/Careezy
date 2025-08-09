@@ -12,6 +12,7 @@ import InternshipExplorer from './pages/InternshipExplorer';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Pricing from './pages/Pricing';
 
 // Create modern Material-UI theme inspired by Simplify.jobs
 const theme = createTheme({
@@ -168,6 +169,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/pricing" element={<Pricing />} />
               <Route path="/resume" element={<ResumeBuilder />} />
               <Route path="/internships" element={<InternshipExplorer />} />
               <Route path="/dashboard" element={<Dashboard />} />

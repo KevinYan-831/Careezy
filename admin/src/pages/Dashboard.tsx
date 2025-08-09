@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Grid,
   Paper,
   Typography,
   Box,
   Card,
   CardContent,
 } from '@mui/material';
+import { Section } from '../components/layout/Section';
+import { ResponsiveGrid, ResponsiveGridItem } from '../components/layout/ResponsiveGrid';
 import {
   People as PeopleIcon,
   Work as WorkIcon,
@@ -89,48 +90,48 @@ const Dashboard: React.FC = () => {
   );
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>
+    <Section>
+      <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
         Dashboard Overview
       </Typography>
       
-      <Grid container spacing={3}>
+      <ResponsiveGrid spacing={3}>
         {/* Stats Cards */}
-        <Grid item xs={12} sm={6} md={3}>
+        <ResponsiveGridItem xs={12} sm={6} md={3}>
           <StatCard
             title="Total Users"
             value={stats.totalUsers.toLocaleString()}
             icon={<PeopleIcon />}
             color="#1976d2"
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        </ResponsiveGridItem>
+        <ResponsiveGridItem xs={12} sm={6} md={3}>
           <StatCard
             title="Active Internships"
             value={stats.totalInternships}
             icon={<WorkIcon />}
             color="#388e3c"
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        </ResponsiveGridItem>
+        <ResponsiveGridItem xs={12} sm={6} md={3}>
           <StatCard
             title="Applications"
             value={stats.activeApplications}
             icon={<TrendingUpIcon />}
             color="#f57c00"
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        </ResponsiveGridItem>
+        <ResponsiveGridItem xs={12} sm={6} md={3}>
           <StatCard
             title="Success Rate"
             value={`${stats.successRate}%`}
             icon={<AssessmentIcon />}
             color="#7b1fa2"
           />
-        </Grid>
+        </ResponsiveGridItem>
 
         {/* User Growth Chart */}
-        <Grid item xs={12} md={8}>
+        <ResponsiveGridItem xs={12} md={8}>
           <Paper sx={{ p: 3, height: 400 }}>
             <Typography variant="h6" gutterBottom>
               User Growth Over Time
@@ -145,10 +146,10 @@ const Dashboard: React.FC = () => {
               </LineChart>
             </ResponsiveContainer>
           </Paper>
-        </Grid>
+        </ResponsiveGridItem>
 
         {/* Application Activity */}
-        <Grid item xs={12} md={4}>
+        <ResponsiveGridItem xs={12} md={4}>
           <Paper sx={{ p: 3, height: 400 }}>
             <Typography variant="h6" gutterBottom>
               Weekly Applications
@@ -163,10 +164,10 @@ const Dashboard: React.FC = () => {
               </BarChart>
             </ResponsiveContainer>
           </Paper>
-        </Grid>
+        </ResponsiveGridItem>
 
         {/* Recent Activity */}
-        <Grid item xs={12}>
+        <ResponsiveGridItem xs={12}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
               Recent Platform Activity
@@ -189,9 +190,9 @@ const Dashboard: React.FC = () => {
               </Typography>
             </Box>
           </Paper>
-        </Grid>
-      </Grid>
-    </Box>
+        </ResponsiveGridItem>
+      </ResponsiveGrid>
+    </Section>
   );
 };
 

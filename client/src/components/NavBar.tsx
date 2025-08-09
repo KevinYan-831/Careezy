@@ -10,6 +10,7 @@ import {
   MenuItem,
   Avatar,
   Tooltip,
+  Container,
 } from '@mui/material';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -46,7 +47,8 @@ const NavBar: React.FC = () => {
 
   return (
     <AppBar position="static" elevation={2}>
-      <Toolbar>
+      <Container maxWidth="xl">
+        <Toolbar sx={{ px: { xs: 0, sm: 2 } }}>
         {/* Logo and Brand */}
         <WorkIcon sx={{ mr: 1 }} />
         <Typography
@@ -81,6 +83,18 @@ const NavBar: React.FC = () => {
             }}
           >
             About
+          </Button>
+          <Button
+            component={Link}
+            to="/pricing"
+            color="inherit"
+            sx={{
+              fontWeight: isActivePage('/pricing') ? 600 : 400,
+              textDecoration: isActivePage('/pricing') ? 'underline' : 'none',
+              textTransform: 'none',
+            }}
+          >
+            Pricing
           </Button>
           
           {isAuthenticated ? (
@@ -195,7 +209,8 @@ const NavBar: React.FC = () => {
              </Box>
          </Box>
          )}
-      </Toolbar>
+        </Toolbar>
+      </Container>
     </AppBar>
   );
 };

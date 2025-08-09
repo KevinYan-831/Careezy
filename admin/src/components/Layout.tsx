@@ -186,12 +186,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          p: { xs: 2, sm: 3 },
           width: { sm: `calc(100% - ${drawerWidth}px)` },
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
         }}
       >
         <Toolbar />
-        <Outlet />
+        <Box sx={{ maxWidth: '100%', mx: 'auto' }}>
+          <Outlet />
+        </Box>
       </Box>
     </Box>
   );
