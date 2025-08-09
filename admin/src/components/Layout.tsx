@@ -12,6 +12,9 @@ import {
   ListItemText,
   Toolbar,
   Typography,
+  Menu,
+  MenuItem,
+  Avatar,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -19,26 +22,45 @@ import {
   People as PeopleIcon,
   Work as WorkIcon,
   Analytics as AnalyticsIcon,
+  AccountCircle as AccountCircleIcon,
+  Logout as LogoutIcon,
 } from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const drawerWidth = 240;
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    handleClose();
+    navigate('/login');
+  };
+
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Users', icon: <PeopleIcon />, path: '/users' },
     { text: 'Internships', icon: <WorkIcon />, path: '/internships' },
     { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
@@ -87,9 +109,48 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Platform Monitoring
           </Typography>
+          <div>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              color="inherit"
+            >
+              <Avatar sx={{ width: 32, height: 32 }}>
+                {user?.name?.charAt(0) || <AccountCircleIcon />}
+              </Avatar>
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleClose}>
+                <Typography variant="body2">{user?.name}</Typography>
+              </MenuItem>
+              <MenuItem onClick={handleLogout}>
+                <ListItemIcon>
+                  <LogoutIcon fontSize="small" />
+                </ListItemIcon>
+                <Typography variant="body2">Logout</Typography>
+              </MenuItem>
+            </Menu>
+          </div>
         </Toolbar>
       </AppBar>
       <Box
@@ -130,7 +191,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         }}
       >
         <Toolbar />
-        {children}
+        <Outlet />
       </Box>
     </Box>
   );
