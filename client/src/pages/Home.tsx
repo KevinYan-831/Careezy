@@ -1,43 +1,39 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Typography,
   Button,
-  Container,
-  Grid,
   Card,
-  CardContent,
   Chip,
-  Avatar,
   Stack,
   Fade,
   Slide,
   Grow,
   IconButton,
   Zoom,
-  Collapse,
   useScrollTrigger,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Section from '../components/layout/Section';
 import ResponsiveGrid, { ResponsiveGridItem } from '../components/layout/ResponsiveGrid';
+import CareezyLogo from '../assets/Careezy-logo.png';
 import {
   Build as BuildIcon,
   Search as SearchIcon,
   Psychology as PsychologyIcon,
   Dashboard as DashboardIcon,
   ArrowForward as ArrowForwardIcon,
-  Star as StarIcon,
-  TrendingUp as TrendingUpIcon,
-  Speed as SpeedIcon,
+  // Star as StarIcon,
+  // TrendingUp as TrendingUpIcon,
+  // Speed as SpeedIcon,
   LinkedIn as LinkedInIcon,
   GitHub as GitHubIcon,
   Instagram as InstagramIcon,
-  CheckCircle as CheckIcon,
+  // CheckCircle as CheckIcon,
   ArrowBackIos as ArrowBackIosIcon,
   ArrowForwardIos as ArrowForwardIosIcon,
 } from '@mui/icons-material';
-import CareezyLogo from '../assets/Careezy-Logo.png';
+// Logo is displayed in the NavBar; avoid duplicating in hero to keep focus on headline
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -163,47 +159,114 @@ const Home: React.FC = () => {
   return (
     <Box>
       {/* Hero Section */}
-      <Section
-        background="#ffffff"
-        fullHeight
-        centerContent
-        sx={{
-          color: 'white',
-          position: 'relative',
-          overflow: 'hidden',
-          minHeight: { xs: '90vh', md: '80vh' },
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'transparent',
-            pointerEvents: 'none',
-          },
-          '&::after': {
-            content: '""',
-            position: 'absolute',
-            display: 'none',
-          },
-          '@keyframes float': {},
-        }}
-      >
+        <Section
+          background="#ffffff"
+          fullHeight
+          centerContent
+          sx={{
+            position: 'relative',
+            overflow: 'hidden',
+            minHeight: { xs: '90vh', md: '80vh' },
+            background: 'linear-gradient(120deg, #f5f8ff 0%, #ffffff 50%, #eefcf9 100%)',
+            backgroundSize: '200% 200%',
+            animation: 'bgShift 18s ease-in-out infinite',
+            // floating accent dots
+            '& .parallaxDot': {
+              position: 'absolute',
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              backgroundColor: '#2563eb',
+              opacity: 0.25,
+              boxShadow: '0 0 12px rgba(37,99,235,0.35)'
+            },
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: '-20%',
+              right: '-10%',
+              width: { xs: '280px', md: '480px' },
+              height: { xs: '280px', md: '480px' },
+              borderRadius: '50%',
+              background: 'radial-gradient(circle at 30% 30%, rgba(37,99,235,0.25), rgba(16,185,129,0.18))',
+              filter: 'blur(60px)',
+              opacity: 0.6,
+              animation: 'blobFloat 14s ease-in-out infinite',
+              pointerEvents: 'none',
+            },
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              bottom: '-15%',
+              left: '-10%',
+              width: { xs: '220px', md: '360px' },
+              height: { xs: '220px', md: '360px' },
+              borderRadius: '50%',
+              background: 'radial-gradient(circle at 70% 70%, rgba(124,58,237,0.18), rgba(37,99,235,0.15))',
+              filter: 'blur(55px)',
+              opacity: 0.55,
+              animation: 'blobFloat2 16s ease-in-out infinite',
+              pointerEvents: 'none',
+            },
+            '@keyframes bgShift': {
+              '0%': { backgroundPosition: '0% 50%' },
+              '50%': { backgroundPosition: '100% 50%' },
+              '100%': { backgroundPosition: '0% 50%' },
+            },
+            '@keyframes blobFloat': {
+              '0%, 100%': { transform: 'translateY(0px) scale(1)' },
+              '50%': { transform: 'translateY(20px) scale(1.05)' },
+            },
+            '@keyframes blobFloat2': {
+              '0%, 100%': { transform: 'translateY(0px) scale(1)' },
+              '50%': { transform: 'translateY(-18px) scale(1.04)' },
+            },
+            '@keyframes titleSheen': {
+              '0%': { backgroundPosition: '0% 50%' },
+              '50%': { backgroundPosition: '100% 50%' },
+              '100%': { backgroundPosition: '0% 50%' }
+            },
+            '@keyframes underlinePulse': {
+              '0%, 100%': { transform: 'scaleX(1)' },
+              '50%': { transform: 'scaleX(1.15)' }
+            },
+          }}
+        >
         <ResponsiveGrid spacing={6} alignItems="center" justifyContent="center">
           <ResponsiveGridItem xs={12} md={6}>
               <Fade in={isVisible} timeout={1000}>
                 <Box>
+                  {/* Brand Logo at top of hero */}
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    justifyContent: 'flex-start',
+                    mb: { xs: 1, md: 1 },
+                    mt: { xs: 1, md: 2 },
+                  }}>
+                    <Box
+                      component="img"
+                      src={CareezyLogo}
+                      alt="Careezy Logo"
+                      sx={{
+                        height: { xs: 96, sm: 120, md: 160, lg: 180 },
+                        width: 'auto',
+                        maxWidth: '90vw',
+                        objectFit: 'contain'
+                      }}
+                    />
+                  </Box>
                   {/* Hero Title Section */}
                   <Box sx={{ 
-                    textAlign: { xs: 'center', md: 'left' },
-                    mb: 4 
+                    textAlign: 'left',
+                    mb: 4,
+                    position: 'relative'
                   }}>
                     <Typography
                       variant="h1"
                       component="h1"
                       sx={{
-                        color: '#000000',
+                        color: 'transparent',
                         fontWeight: 900,
                         fontSize: { xs: '3.5rem', md: '4.5rem', lg: '6rem' },
                         textShadow: 'none',
@@ -213,67 +276,66 @@ const Home: React.FC = () => {
                         textRendering: 'optimizeLegibility',
                         WebkitFontSmoothing: 'antialiased',
                         MozOsxFontSmoothing: 'grayscale',
-                        mb: 2
+                        mb: 2,
+                        backgroundImage: 'linear-gradient(90deg, #111827, #1f2937, #111827)',
+                        backgroundSize: '200% 100%',
+                        WebkitBackgroundClip: 'text',
+                        backgroundClip: 'text',
+                        animation: 'titleSheen 8s ease-in-out infinite'
                       }}
                     >
                       Your Career Journey
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: { xs: 'center', md: 'flex-start' } }}>
-                      <img 
-                        src={CareezyLogo} 
-                        alt="Careezy Logo" 
-                        style={{ 
-                          height: '48px', 
-                          width: 'auto'
-                        }} 
-                      />
-                      <Typography
-                        variant="h2"
-                        component="h2"
-                        sx={{
-                          color: '#00796B',
-                          fontWeight: 700,
-                          fontSize: { xs: '2rem', md: '2.5rem', lg: '3rem' },
-                          letterSpacing: '-0.01em',
-                          lineHeight: 1.2,
-                          fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-                        }}
-                      >
-                        Starts at Careezy
-                      </Typography>
-                    </Box>
+                    <Box sx={{
+                      width: { xs: 80, md: 110 },
+                      height: 6,
+                      borderRadius: 3,
+                      background: 'linear-gradient(90deg, #2563eb, #10b981)',
+                      boxShadow: '0 8px 20px rgba(37,99,235,0.25)',
+                      animation: 'underlinePulse 3.5s ease-in-out infinite',
+                    }} />
+                    <Typography
+                      variant="h2"
+                      component="h2"
+                      sx={{
+                        color: '#00796B',
+                        fontWeight: 700,
+                        fontSize: { xs: '1.8rem', md: '2.2rem', lg: '2.6rem' },
+                        letterSpacing: '-0.01em',
+                        lineHeight: 1.25,
+                        fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                        textAlign: { xs: 'center', md: 'left' },
+                        ml: { xs: 0, md: 0 }
+                      }}
+                    >
+                      Starts Here
+                    </Typography>
                   </Box>
                   <Typography
-                    variant="h4"
+                    variant="subtitle1"
                     sx={{
-                      color: '#000000',
+                      color: 'text.secondary',
                       mb: 3,
-                      fontWeight: 600,
-                      lineHeight: 1.4,
-                      fontSize: { xs: '1.4rem', md: '1.8rem', lg: '2rem' },
-                      textShadow: 'none',
-                      letterSpacing: '0.005em',
+                      fontWeight: 500,
+                      letterSpacing: '0.01em',
                       textAlign: { xs: 'center', md: 'left' },
-                      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-                      textRendering: 'optimizeLegibility',
-                      WebkitFontSmoothing: 'antialiased',
-                      MozOsxFontSmoothing: 'grayscale',
+                      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif'
                     }}
                   >
-                    Build resumes, find internships, get AI guidance
+                    ATS‑friendly templates • Real‑time preview • AI insights • Export to PDF & Google Docs
                   </Typography>
-                  <Grow in={isVisible} timeout={1500}>
+                   <Grow in={isVisible} timeout={1500}>
                     <Typography
                       variant="h6"
                       sx={{
                         color: '#000000',
                         mb: 5,
                         fontWeight: 500,
-                        fontSize: { xs: '1.3rem', md: '1.5rem', lg: '1.7rem' },
+                        fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.45rem' },
                         lineHeight: 1.8,
                         textShadow: '0 3px 10px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3)',
                         letterSpacing: '0.005em',
-                        maxWidth: '650px',
+                        maxWidth: { xs: '100%', md: '650px' },
                         textAlign: { xs: 'center', md: 'left' },
                         fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
                         textRendering: 'optimizeLegibility',
@@ -303,9 +365,9 @@ const Home: React.FC = () => {
                           bgcolor: '#00796B',
                           color: '#ffffff',
                            fontWeight: 900,
-                           px: { xs: 4, sm: 5, md: 6 },
-                           py: { xs: 1.8, sm: 2.2, md: 2.5 },
-                           fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.4rem' },
+                           px: { xs: 3.5, sm: 5, md: 6 },
+                           py: { xs: 1.6, sm: 2.2, md: 2.5 },
+                           fontSize: { xs: '1rem', sm: '1.2rem', md: '1.35rem' },
                            borderRadius: 3,
                            textTransform: 'none',
                            boxShadow: '0 10px 30px rgba(0,121,107,0.35)',
@@ -372,6 +434,8 @@ const Home: React.FC = () => {
                       overflow: 'hidden',
                       mt: 4,
                       mb: 4,
+                      // subtle 3D parallax card tilt
+                      perspective: '1000px'
                     }}
                   >
                     {features.map((feature, index) => (
@@ -396,8 +460,9 @@ const Home: React.FC = () => {
                             maxWidth: 320,
                             transition: 'all 0.3s ease',
                             cursor: 'pointer',
+                            transform: 'rotateX(0deg) rotateY(0deg)',
                             '&:hover': {
-                              transform: 'translateY(-4px)',
+                              transform: 'translateY(-4px) rotateX(2deg) rotateY(-2deg)',
                               boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
                               border: `2px solid ${feature.color}`,
                             },
@@ -540,14 +605,26 @@ const Home: React.FC = () => {
               fontSize: '1.4rem',
               lineHeight: 1.8,
               fontWeight: 500,
-              textShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              textShadow: '0 1px 3px rgba(0,0,0,0.08)',
               fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
               textRendering: 'optimizeLegibility',
               WebkitFontSmoothing: 'antialiased',
               MozOsxFontSmoothing: 'grayscale',
-              letterSpacing: '0.005em'
+              letterSpacing: '0.005em',
+              position: 'relative'
             }}>
               From building standout resumes to landing your dream internship, we've got every step covered
+              <Box sx={{
+                position: 'absolute',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                bottom: -12,
+                width: 120,
+                height: 2,
+                background: 'linear-gradient(90deg, #2563eb, #7c3aed)',
+                opacity: 0.4,
+                borderRadius: 2
+              }} />
             </Typography>
           </Grow>
         </Box>
@@ -765,25 +842,36 @@ const Home: React.FC = () => {
         </Box>
       </Section>
 
+        {/* Section Divider */}
+        <Box sx={{
+          position: 'relative',
+          height: { xs: 120, md: 180 },
+          mt: { xs: 4, md: 6 },
+          mb: { xs: -6, md: -8 },
+          overflow: 'hidden'
+        }}>
+          <Box sx={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, #f8fafc 85%), radial-gradient(1000px 140px at 50% 120%, rgba(37,99,235,0.10), rgba(16,185,129,0.08), transparent 70%)',
+            filter: 'blur(0.3px)'
+          }} />
+          <Box sx={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: -20,
+            height: 60,
+            background: 'radial-gradient(60% 20px at 50% 0%, rgba(0,0,0,0.06), transparent 70%)',
+            pointerEvents: 'none'
+          }} />
+        </Box>
+
         {/* About Section */}
         <Section 
           id="about" 
-            background="linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)" 
+          background="linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)" 
           centerContent
-          ref={(el) => {
-            if (el && !animatedStats) {
-              const observer = new IntersectionObserver(
-                ([entry]) => {
-                  if (entry.isIntersecting) {
-                    setAnimatedStats(true);
-                    observer.disconnect();
-                  }
-                },
-                { threshold: 0.3 }
-              );
-              observer.observe(el);
-            }
-          }}
         >
           <Fade in={trigger} timeout={800}>
             <Typography variant="h2" component="h2" gutterBottom sx={{
@@ -828,7 +916,7 @@ const Home: React.FC = () => {
             ].map((stat, index) => (
               <ResponsiveGridItem xs={12} sm={6} md={4} key={index}>
                 <Zoom in={trigger} timeout={1000 + index * 200}>
-                  <Box onMouseEnter={() => animateNumbers(stat.key as any, stat.target)}
+                  <Box onMouseEnter={() => animateNumbers(stat.key as 'students' | 'companies' | 'success', stat.target)}
                     sx={{ 
                       p: 4, 
                       textAlign: 'center',
@@ -1001,7 +1089,7 @@ const Home: React.FC = () => {
           </ResponsiveGrid>
           <Box sx={{ borderTop: '1px solid rgba(255,255,255,0.1)', mt: 6, pt: 4, textAlign: 'center' }}>
             <Typography variant="body2" sx={{ color: 'grey.500' }}>
-              © 2025 Careezy. All rights reserved. Powered by DeepSeek AI.
+              © 2025 Careezy. All rights reserved.
             </Typography>
           </Box>
       </Section>

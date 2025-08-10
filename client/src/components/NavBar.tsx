@@ -14,8 +14,8 @@ import {
 } from '@mui/material';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import WorkIcon from '@mui/icons-material/Work';
-// import CareezyLogo from '../assets/Careezy-Logo.png';
+// import WorkIcon from '@mui/icons-material/Work';
+// Logo intentionally not shown in NavBar per design request
 
 const NavBar: React.FC = () => {
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ const NavBar: React.FC = () => {
     <AppBar position="static" elevation={2}>
       <Container maxWidth="xl">
         <Toolbar sx={{ px: { xs: 0, sm: 2 } }}>
-        {/* Logo and Brand */}
+        {/* Brand */}
         <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
           <Typography
             variant="h6"
@@ -61,9 +61,7 @@ const NavBar: React.FC = () => {
               color: '#ffffff',
               textDecoration: 'none',
               fontSize: { xs: '1.2rem', sm: '1.35rem', md: '1.5rem' },
-              '&:hover': {
-                textDecoration: 'none',
-              },
+              '&:hover': { textDecoration: 'none' },
             }}
           >
             Careezy

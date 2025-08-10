@@ -4,12 +4,13 @@ import { ResponsiveContainer } from './ResponsiveContainer';
 
 interface SectionProps {
   children: React.ReactNode;
-  sx?: any;
+  sx?: Record<string, unknown>;
   background?: 'default' | 'grey' | 'primary' | 'secondary' | string;
   centerContent?: boolean;
   fullHeight?: boolean;
   containerMaxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false;
   noPadding?: boolean;
+  id?: string;
 }
 
 const Section: React.FC<SectionProps> = ({
