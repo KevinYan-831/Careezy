@@ -33,7 +33,7 @@ app.get('/api/health', (req, res) => {
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/careezy';
+    const mongoURI = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/careezy';
     await mongoose.connect(mongoURI);
     console.log('MongoDB connected successfully');
   } catch (error) {

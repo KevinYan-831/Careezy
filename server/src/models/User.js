@@ -26,7 +26,7 @@ const UserSchema = new Schema({
   },
   profileType: {
     type: String,
-    enum: ['freshman', 'student'],
+    enum: ['freshman', 'current_student', 'student'],
     required: true
   }
 }, {

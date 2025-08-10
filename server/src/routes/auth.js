@@ -10,8 +10,11 @@ router.post('/register', async (req, res) => {
   try {
     const { email, password, firstName, lastName, profileType } = req.body;
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    // Normalize email to avoid case-sensitive duplicates
+    const normalizedEmail = (email || '').trim().toLowerCase();
+
+    // Check if user already exists (case-insensitive)
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
@@ -22,7 +25,7 @@ router.post('/register', async (req, res) => {
 
     // Create user
     const user = new User({
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
       firstName,
       lastName,
@@ -50,6 +53,10 @@ router.post('/register', async (req, res) => {
       }
     });
   } catch (error) {
+    // Handle duplicate key error (e.g., email unique index)
+    if (error && (error.code === 11000 || error.name === 'MongoServerError')) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
     console.error('Registration error:', error);
     res.status(500).json({ message: 'Server error during registration' });
   }
