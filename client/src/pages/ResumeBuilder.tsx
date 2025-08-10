@@ -15,6 +15,10 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import {
   Save as SaveIcon,
@@ -62,6 +66,7 @@ const ResumeBuilder: React.FC = () => {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [commonAppDialog, setCommonAppDialog] = useState(false);
   const [commonAppData, setCommonAppData] = useState('');
+  const [template, setTemplate] = useState<'default' | 'custom'>('default');
   
   const methods = useForm({
     defaultValues: {
@@ -79,11 +84,14 @@ const ResumeBuilder: React.FC = () => {
       experience: [],
       projects: [],
       skills: {
-        technical: [],
+        technical: '',
+        technicalOther: '',
+        soft: '',
+        softOther: '',
+        certifications: '',
         languages: [],
-        other: [],
       },
-      extracurriculars: [],
+      activities: [],
     },
   });
 
@@ -111,7 +119,7 @@ const ResumeBuilder: React.FC = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await axios.get('http://localhost:5000/api/resume', {
+       const response = await axios.get('http://localhost:5000/api/resume', {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -129,7 +137,8 @@ const ResumeBuilder: React.FC = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      await axios.post('http://localhost:5000/api/resume', watchedData, {
+       await axios.post(`http://localhost:5000/api/resume${template === 'custom' ? '?template=custom' : ''}`,
+         watchedData, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -146,7 +155,8 @@ const ResumeBuilder: React.FC = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/resume', data, {
+      await axios.post(`http://localhost:5000/api/resume${template === 'custom' ? '?template=custom' : ''}`,
+        data, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSaveStatus('saved');
@@ -180,7 +190,7 @@ const ResumeBuilder: React.FC = () => {
       const token = localStorage.getItem('token');
       
       const response = await axios.post(
-        'http://localhost:5000/api/resume/parse-common-app',
+        `http://localhost:5000/api/resume/parse-common-app${template === 'custom' ? '?template=custom' : ''}`,
         { commonAppData: JSON.parse(commonAppData) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -210,17 +220,30 @@ const ResumeBuilder: React.FC = () => {
   ];
 
   return (
+    <FormProvider {...methods}>
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <Grid container spacing={3}>
         {/* Form Section */}
         <Grid item xs={12} lg={6}>
           <Paper elevation={3} sx={{ height: 'fit-content' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, gap: 2 }}>
                 <Typography variant="h5" component="h1" fontWeight={600}>
                   Resume Builder
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                    <FormControl size="small" sx={{ minWidth: 180 }}>
+                      <InputLabel id="template-select-label">Template</InputLabel>
+                      <Select
+                        labelId="template-select-label"
+                        value={template}
+                        label="Template"
+                        onChange={(e) => setTemplate(e.target.value as 'default' | 'custom')}
+                      >
+                        <MenuItem value="default">Platform Default</MenuItem>
+                        <MenuItem value="custom">Jake Gutierrez (LaTeX)</MenuItem>
+                      </Select>
+                    </FormControl>
                   <Button
                     variant="outlined"
                     startIcon={<UploadIcon />}
@@ -264,18 +287,16 @@ const ResumeBuilder: React.FC = () => {
               </Tabs>
             </Box>
 
-            <FormProvider {...methods}>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                {tabs.map((tab, index) => {
-                  const Component = tab.component;
-                  return (
-                    <TabPanel key={index} value={activeTab} index={index}>
-                      <Component />
-                    </TabPanel>
-                  );
-                })}
-              </form>
-            </FormProvider>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              {tabs.map((tab, index) => {
+                const Component = tab.component;
+                return (
+                  <TabPanel key={index} value={activeTab} index={index}>
+                    <Component />
+                  </TabPanel>
+                );
+              })}
+            </form>
           </Paper>
         </Grid>
 
@@ -340,6 +361,7 @@ const ResumeBuilder: React.FC = () => {
         </DialogActions>
       </Dialog>
     </Container>
+    </FormProvider>
   );
 };
 

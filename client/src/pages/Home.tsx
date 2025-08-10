@@ -121,7 +121,7 @@ const Home: React.FC = () => {
       title: 'Smart Resume Builder',
       description: 'Create professional resumes with AI-powered suggestions and real-time formatting.',
       action: 'Build Resume',
-      path: '/resume-builder',
+      path: '/resume',
       stats: '50K+ resumes created',
       color: '#2563eb',
     },
@@ -1066,7 +1066,7 @@ const Home: React.FC = () => {
               </Typography>
               <Stack spacing={1}>
                 {[
-                  { label: 'Resume Builder', path: '/resume-builder' },
+                  { label: 'Resume Builder', path: '/resume' },
                   { label: 'Internship Explorer', path: '/internships' },
                   { label: 'AI Career Coach', path: '/dashboard' },
                   { label: 'Dashboard', path: '/dashboard' },

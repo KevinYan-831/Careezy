@@ -259,8 +259,122 @@ function generateFreshmanLatexResume(resumeData) {
   });
 }
 
+// Jake Gutierrez-style custom template
+function generateCustomLatexResume(resumeData) {
+  const {
+    personalInfo = {},
+    education = [],
+    experience = [],
+    projects = [],
+    skills = {},
+  } = resumeData;
+
+  const eduRows = education.map((e) => `    \\resumeSubheading
+      {${latexSafe(e.institution || '')}}{${latexSafe(e.location || '')}}
+      {${latexSafe(e.degree || '')}${e.field ? ` in ${latexSafe(e.field)}` : ''}}{${latexSafe(e.startDate || '')} -- ${latexSafe(e.endDate || '')}}
+`).join('\n');
+
+  const expRows = experience.map((x) => `    \\resumeSubheading
+      {${latexSafe(x.title || '')}}{${latexSafe(x.startDate || '')} -- ${latexSafe(x.endDate || '')}}
+      {${latexSafe(x.company || '')}}{${latexSafe(x.location || '')}}
+      \\resumeItemListStart
+        ${x.description ? `\\resumeItem{${latexSafe(x.description)}}` : ''}
+        ${x.achievements ? `\\resumeItem{${latexSafe(x.achievements)}}` : ''}
+      \\resumeItemListEnd
+`).join('\n');
+
+  const projRows = projects.map((p) => `      \\resumeProjectHeading
+          {\\textbf{${latexSafe(p.name || '')}} $|$ \\emph{${latexSafe(p.technologies || '')}}}{${latexSafe(p.startDate || '')} -- ${latexSafe(p.endDate || '')}}
+          \\resumeItemListStart
+            ${p.description ? `\\resumeItem{${latexSafe(p.description)}}` : ''}
+            ${p.highlights ? `\\resumeItem{${latexSafe(p.highlights)}}` : ''}
+          \\resumeItemListEnd`).join('\n');
+
+  const technical = latexSafe(skills.technical || '');
+
+  return `%-------------------------
+% Resume in Latex (Custom Template)
+%------------------------
+
+\\documentclass[letterpaper,11pt]{article}
+\\usepackage{latexsym}
+\\usepackage[empty]{fullpage}
+\\usepackage{titlesec}
+\\usepackage{marvosym}
+\\usepackage[usenames,dvipsnames]{color}
+\\usepackage{verbatim}
+\\usepackage{enumitem}
+\\usepackage[hidelinks]{hyperref}
+\\usepackage{fancyhdr}
+\\usepackage[english]{babel}
+\\usepackage{tabularx}
+\\input{glyphtounicode}
+
+\\pagestyle{fancy}
+\\fancyhf{}
+\\fancyfoot{}
+\\renewcommand{\\headrulewidth}{0pt}
+\\renewcommand{\\footrulewidth}{0pt}
+
+\\addtolength{\\oddsidemargin}{-0.5in}
+\\addtolength{\\evensidemargin}{-0.5in}
+\\addtolength{\\textwidth}{1in}
+\\addtolength{\\topmargin}{-.5in}
+\\addtolength{\\textheight}{1.0in}
+
+\\urlstyle{same}
+\\raggedbottom
+\\raggedright
+\\setlength{\\tabcolsep}{0in}
+
+\\titleformat{\\section}{\\vspace{-4pt}\\scshape\\raggedright\\large}{}{0em}{}[\\color{black}\\titlerule \\vspace{-5pt}]
+\\pdfgentounicode=1
+
+\\newcommand{\\resumeItem}[1]{\\item\\small{{#1 \\vspace{-2pt}}}}
+\\newcommand{\\resumeSubheading}[4]{\\vspace{-2pt}\\item\\begin{tabular*}{0.97\\textwidth}[t]{l@{\\extracolsep{\\fill}}r}\\textbf{#1} & #2 \\\\ \\textit{\\small#3} & \\textit{\\small #4} \\\\ \\end{tabular*}\\vspace{-7pt}}
+\\newcommand{\\resumeSubSubheading}[2]{\\item\\begin{tabular*}{0.97\\textwidth}{l@{\\extracolsep{\\fill}}r}\\textit{\\small#1} & \\textit{\\small #2} \\\\ \\end{tabular*}\\vspace{-7pt}}
+\\newcommand{\\resumeProjectHeading}[2]{\\item\\begin{tabular*}{0.97\\textwidth}{l@{\\extracolsep{\\fill}}r}\\small#1 & #2 \\\\ \\end{tabular*}\\vspace{-7pt}}
+\\newcommand{\\resumeSubItem}[1]{\\resumeItem{#1}\\vspace{-4pt}}
+\\renewcommand\\labelitemii{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
+\\newcommand{\\resumeSubHeadingListStart}{\\begin{itemize}[leftmargin=0.15in, label={}]}
+\\newcommand{\\resumeSubHeadingListEnd}{\\end{itemize}}
+\\newcommand{\\resumeItemListStart}{\\begin{itemize}}
+\\newcommand{\\resumeItemListEnd}{\\end{itemize}\\vspace{-5pt}}
+
+\\begin{document}
+\\begin{center}
+    \\textbf{\\Huge \\scshape ${latexSafe(personalInfo.firstName || '')} ${latexSafe(personalInfo.lastName || '')}} \\ \\ \\vspace{1pt}
+    \\small ${latexSafe(personalInfo.phone || '')} $|$ \\href{mailto:${latexSafe(personalInfo.email || '')}}{\\underline{${latexSafe(personalInfo.email || '')}}} $|$ 
+    ${personalInfo.linkedin ? `\\href{${latexSafe(personalInfo.linkedin)}}{\\underline{${latexSafe(personalInfo.linkedin)}}} $|$` : ''}
+    ${personalInfo.github ? `\\href{${latexSafe(personalInfo.github)}}{\\underline{${latexSafe(personalInfo.github)}}}` : ''}
+\\end{center}
+
+\\section{Education}
+  \\resumeSubHeadingListStart
+${eduRows}
+  \\resumeSubHeadingListEnd
+
+\\section{Experience}
+  \\resumeSubHeadingListStart
+${expRows}
+  \\resumeSubHeadingListEnd
+
+\\section{Projects}
+  \\resumeSubHeadingListStart
+${projRows}
+  \\resumeSubHeadingListEnd
+
+\\section{Technical Skills}
+ \\begin{itemize}[leftmargin=0.15in, label={}]
+    \\small{\\item{ \\textbf{Languages}{: ${technical}} }}
+ \\end{itemize}
+
+\\end{document}`;
+}
+
 module.exports = {
   generateLatexResume,
   generateModernLatexResume,
-  generateFreshmanLatexResume
+  generateFreshmanLatexResume,
+  generateCustomLatexResume
 };

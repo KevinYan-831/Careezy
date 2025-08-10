@@ -1,7 +1,7 @@
 const express = require('express');
 const Resume = require('../models/Resume');
 const { authenticateToken, AuthRequest } = require('../middleware/auth');
-const { generateLatexResume } = require('../services/latexService');
+const { generateLatexResume, generateCustomLatexResume } = require('../services/latexService');
 const { parseCommonAppData } = require('../services/aiService');
 
 const router = express.Router();
@@ -27,7 +27,8 @@ router.post('/', authenticateToken, async (req, res) => {
     resumeData.userId = req.user._id;
 
     // Generate LaTeX code
-    const latexCode = generateLatexResume(resumeData);
+    const template = req.query.template === 'custom' ? 'custom' : 'default';
+    const latexCode = template === 'custom' ? generateCustomLatexResume(resumeData) : generateLatexResume(resumeData);
     resumeData.latexCode = latexCode;
 
     const existingResume = await Resume.findOne({ userId: req.user._id });
@@ -66,7 +67,8 @@ router.post('/parse-common-app', authenticateToken, async (req, res) => {
     };
 
     // Generate LaTeX code
-    const latexCode = generateLatexResume(resumeData);
+    const template = req.query.template === 'custom' ? 'custom' : 'default';
+    const latexCode = template === 'custom' ? generateCustomLatexResume(resumeData) : generateLatexResume(resumeData);
     resumeData.latexCode = latexCode;
 
     const resume = new Resume(resumeData);

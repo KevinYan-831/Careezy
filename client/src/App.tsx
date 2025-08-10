@@ -6,6 +6,7 @@ import { Box } from '@mui/material';
 
 // Components
 import NavBar from './components/NavBar';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import ResumeBuilder from './pages/ResumeBuilder';
 import InternshipExplorer from './pages/InternshipExplorer';
@@ -170,9 +171,9 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/pricing" element={<Pricing />} />
-              <Route path="/resume" element={<ResumeBuilder />} />
-              <Route path="/internships" element={<InternshipExplorer />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/resume" element={<ProtectedRoute><ResumeBuilder /></ProtectedRoute>} />
+              <Route path="/internships" element={<ProtectedRoute><InternshipExplorer /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             </Routes>
           </Box>
         </Box>

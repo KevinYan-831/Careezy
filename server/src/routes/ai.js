@@ -19,7 +19,7 @@ const callDeepSeekAPI = async (messages, maxTokens = 1000) => {
     const response = await axios.post(
       DEEPSEEK_API_URL,
       {
-        model: 'deepseek-chat',
+        model: 'deepseek-r1',
         messages,
         max_tokens: maxTokens,
         temperature: 0.7,
@@ -223,7 +223,7 @@ Please provide:
 // Internship matching and recommendations
 router.post('/internship-match', async (req, res) => {
   try {
-    const { userProfile, preferences, skills } = req.body;
+    const { userProfile, preferences, skills, isPremium } = req.body;
 
     if (!userProfile) {
       return res.status(400).json({ error: 'User profile is required' });
@@ -250,7 +250,21 @@ Please provide:
       { role: 'user', content: userPrompt },
     ];
 
-    const recommendations = await callDeepSeekAPI(messages, 2000);
+    let recommendations;
+    if (isPremium && process.env.OPENAI_API_KEY) {
+      // Use OpenAI gpt-4o for premium
+      const openaiResp = await axios.post('https://api.openai.com/v1/chat/completions', {
+        model: 'gpt-4o',
+        messages,
+        max_tokens: 2000,
+        temperature: 0.7
+      }, {
+        headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` }
+      });
+      recommendations = openaiResp.data.choices[0]?.message?.content || '';
+    } else {
+      recommendations = await callDeepSeekAPI(messages, 2000);
+    }
 
     res.json({
       success: true,

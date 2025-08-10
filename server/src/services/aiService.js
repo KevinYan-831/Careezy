@@ -11,14 +11,13 @@ const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 async function callDeepSeekAPI(prompt, systemPrompt) {
   try {
     if (!DEEPSEEK_API_KEY) {
-      console.warn('DeepSeek API key not configured, returning mock response');
-      return 'Mock AI response - DeepSeek API not configured';
+      throw new Error('DeepSeek API key not configured');
     }
 
     const response = await axios.post(
       DEEPSEEK_API_URL,
       {
-        model: 'deepseek-chat',
+        model: 'deepseek-r1',
         messages: [
           ...(systemPrompt ? [{ role: 'system', content: systemPrompt }] : []),
           { role: 'user', content: prompt }

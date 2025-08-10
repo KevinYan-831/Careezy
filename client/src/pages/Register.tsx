@@ -67,6 +67,7 @@ const Register: React.FC = () => {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
     trigger,
   } = useForm<RegisterFormData>({
@@ -140,7 +141,11 @@ const Register: React.FC = () => {
             <FormControl component="fieldset" fullWidth>
               <RadioGroup
                 value={profileType}
-                {...register('profileType')}
+                onChange={async (_e, val) => {
+                  const v = (val as 'freshman' | 'current_student') ?? 'current_student';
+                  setValue('profileType', v, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+                  await trigger('profileType');
+                }}
               >
                 <Paper
                   variant="outlined"
@@ -193,6 +198,8 @@ const Register: React.FC = () => {
                   />
                 </Paper>
               </RadioGroup>
+              {/* keep RHF field registered for validation */}
+              <input type="hidden" value={profileType} {...register('profileType')} />
               {errors.profileType && (
                 <Typography color="error" variant="caption">
                   {errors.profileType.message}

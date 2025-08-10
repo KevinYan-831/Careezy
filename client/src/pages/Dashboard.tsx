@@ -88,6 +88,19 @@ const Dashboard: React.FC = () => {
   const [bookmarkedCount, setBookmarkedCount] = useState(0);
 
   useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (user) {
+      try {
+        const parsed = JSON.parse(user);
+        setUserProfile({
+          firstName: parsed.firstName || '',
+          lastName: parsed.lastName || '',
+          email: parsed.email || '',
+          profileType: parsed.profileType || '',
+          joinDate: new Date().toISOString().slice(0,10),
+        });
+      } catch {}
+    }
     fetchDashboardData();
   }, []);
 
@@ -174,7 +187,7 @@ const Dashboard: React.FC = () => {
         },
       ];
 
-      setUserProfile(mockUserProfile);
+      if (!userProfile) setUserProfile(mockUserProfile);
       setResumeStats(mockResumeStats);
       setTopMatches(mockTopMatches);
       setNotifications(mockNotifications);
@@ -358,7 +371,7 @@ const Dashboard: React.FC = () => {
                 size="small"
                 variant="contained"
                 startIcon={<EditIcon />}
-                onClick={() => navigate('/resume-builder')}
+                onClick={() => navigate('/resume')}
               >
                 Continue Building
               </Button>
@@ -556,7 +569,7 @@ const Dashboard: React.FC = () => {
                   fullWidth
                   variant="outlined"
                   startIcon={<DescriptionIcon />}
-                  onClick={() => navigate('/resume-builder')}
+                  onClick={() => navigate('/resume')}
                   sx={{ py: 1.5 }}
                 >
                   Edit Resume
