@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -22,9 +22,25 @@ const NavBar: React.FC = () => {
   const location = useLocation();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   
-  // Mock authentication state - in production, this would come from context/redux
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+
+  useEffect(() => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const storedUser = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+    if (token) {
+      setIsAuthenticated(true);
+      if (storedUser) {
+        try {
+          const u = JSON.parse(storedUser);
+          setUser({ name: `${u.firstName || ''} ${u.lastName || ''}`.trim(), email: u.email || '' });
+        } catch {}
+      }
+    } else {
+      setIsAuthenticated(false);
+      setUser(null);
+    }
+  }, [location.pathname]);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -38,6 +54,7 @@ const NavBar: React.FC = () => {
     setIsAuthenticated(false);
     setUser(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     navigate('/');
     handleCloseUserMenu();
   };

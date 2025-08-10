@@ -37,6 +37,7 @@ import {
   Warning as WarningIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 interface UserProfile {
   firstName: string;
@@ -88,110 +89,75 @@ const Dashboard: React.FC = () => {
   const [bookmarkedCount, setBookmarkedCount] = useState(0);
 
   useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (user) {
+    const loadUser = async () => {
       try {
-        const parsed = JSON.parse(user);
-        setUserProfile({
-          firstName: parsed.firstName || '',
-          lastName: parsed.lastName || '',
-          email: parsed.email || '',
-          profileType: parsed.profileType || '',
-          joinDate: new Date().toISOString().slice(0,10),
-        });
-      } catch {}
-    }
-    fetchDashboardData();
+        const token = localStorage.getItem('token');
+        if (token) {
+          const res = await axios.get('/api/auth/verify', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const u = res.data?.user;
+          if (u) {
+            setUserProfile({
+              firstName: u.firstName || '',
+              lastName: u.lastName || '',
+              email: u.email || '',
+              profileType: u.profileType || '',
+              joinDate: u.createdAt || new Date().toISOString(),
+            });
+            // Keep localStorage in sync in case other tabs need it
+            localStorage.setItem('user', JSON.stringify({
+              firstName: u.firstName,
+              lastName: u.lastName,
+              email: u.email,
+              profileType: u.profileType,
+            }));
+          }
+        } else {
+          const user = localStorage.getItem('user');
+          if (user) {
+            const parsed = JSON.parse(user);
+            setUserProfile({
+              firstName: parsed.firstName || '',
+              lastName: parsed.lastName || '',
+              email: parsed.email || '',
+              profileType: parsed.profileType || '',
+              joinDate: new Date().toISOString(),
+            });
+          }
+        }
+      } catch (e) {
+        // If token invalid, fall back to localStorage data if present
+        const user = localStorage.getItem('user');
+        if (user) {
+          try {
+            const parsed = JSON.parse(user);
+            setUserProfile({
+              firstName: parsed.firstName || '',
+              lastName: parsed.lastName || '',
+              email: parsed.email || '',
+              profileType: parsed.profileType || '',
+              joinDate: new Date().toISOString(),
+            });
+          } catch {}
+        }
+      } finally {
+        fetchDashboardData();
+      }
+    };
+
+    loadUser();
   }, []);
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       
-      // Mock data for demonstration
-      const mockUserProfile: UserProfile = {
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@university.edu',
-        profileType: 'Current Student',
-        joinDate: '2024-01-15',
-      };
-
-      const mockResumeStats: ResumeStats = {
-        completionPercentage: 75,
-        lastUpdated: '2024-02-10',
-        sections: {
-          personalInfo: true,
-          education: true,
-          experience: true,
-          projects: false,
-          skills: true,
-          activities: false,
-        },
-      };
-
-      const mockTopMatches: InternshipMatch[] = [
-        {
-          _id: '1',
-          title: 'Software Engineering Intern',
-          company: 'Google',
-          matchScore: 95,
-          location: 'Mountain View, CA',
-          deadline: '2024-03-15',
-          applied: false,
-        },
-        {
-          _id: '2',
-          title: 'Data Science Intern',
-          company: 'Microsoft',
-          matchScore: 88,
-          location: 'Seattle, WA',
-          deadline: '2024-03-20',
-          applied: true,
-        },
-        {
-          _id: '3',
-          title: 'Product Management Intern',
-          company: 'Apple',
-          matchScore: 82,
-          location: 'Cupertino, CA',
-          deadline: '2024-03-25',
-          applied: false,
-        },
-      ];
-
-      const mockNotifications: Notification[] = [
-        {
-          _id: '1',
-          type: 'deadline',
-          title: 'Application Deadline Approaching',
-          message: 'Google Software Engineering Intern application closes in 3 days',
-          timestamp: '2024-02-12T10:00:00Z',
-          read: false,
-        },
-        {
-          _id: '2',
-          type: 'match',
-          title: 'New High Match Found',
-          message: 'Found a 92% match for Data Analyst Intern at Netflix',
-          timestamp: '2024-02-11T15:30:00Z',
-          read: false,
-        },
-        {
-          _id: '3',
-          type: 'achievement',
-          title: 'Resume Completion Milestone',
-          message: 'Congratulations! Your resume is now 75% complete',
-          timestamp: '2024-02-10T09:15:00Z',
-          read: true,
-        },
-      ];
-
-      if (!userProfile) setUserProfile(mockUserProfile);
-      setResumeStats(mockResumeStats);
-      setTopMatches(mockTopMatches);
-      setNotifications(mockNotifications);
-      setBookmarkedCount(5);
+      // New users should start blank
+      setResumeStats(null);
+      setTopMatches([]);
+      setNotifications([]);
+      setBookmarkedCount(0);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
     } finally {
