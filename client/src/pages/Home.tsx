@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -21,7 +21,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import Section from '../components/layout/Section';
 import ResponsiveGrid, { ResponsiveGridItem } from '../components/layout/ResponsiveGrid';
-import CareezyLogo from '../assets/Careezy-Logo.png';
 import {
   Build as BuildIcon,
   Search as SearchIcon,
@@ -35,7 +34,10 @@ import {
   GitHub as GitHubIcon,
   Instagram as InstagramIcon,
   CheckCircle as CheckIcon,
+  ArrowBackIos as ArrowBackIosIcon,
+  ArrowForwardIos as ArrowForwardIosIcon,
 } from '@mui/icons-material';
+import CareezyLogo from '../assets/Careezy-Logo.png';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -43,6 +45,51 @@ const Home: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [animatedStats, setAnimatedStats] = useState(false);
+  const [animatedNumbers, setAnimatedNumbers] = useState({ students: 0, companies: 0, success: 0 });
+
+  // reusable animation function
+  const animateNumbers = useCallback((key?: 'students' | 'companies' | 'success', targetValue?: number) => {
+      const targets = { students: 5000, companies: 200, success: 95 };
+
+      // if a specific key is provided, animate only that metric
+      if (key) {
+        setAnimatedNumbers(prev => ({ ...prev, [key]: 0 }));
+        const duration = 2000;
+        const steps = 60;
+        const stepTime = duration / steps;
+        let currentStep = 0;
+        const timer = setInterval(() => {
+          currentStep++;
+          const progress = currentStep / steps;
+          setAnimatedNumbers(prev => ({ ...prev, [key]: Math.floor((targetValue ?? targets[key]) * progress) }));
+          if (currentStep >= steps) {
+            clearInterval(timer);
+            setAnimatedNumbers(prev => ({ ...prev, [key]: (targetValue ?? targets[key]) }));
+          }
+        }, stepTime);
+        return;
+      }
+
+      // otherwise animate all stats (initial load)
+      setAnimatedNumbers({ students: 0, companies: 0, success: 0 });
+      const duration = 2000;
+      const steps = 60;
+      const stepTime = duration / steps;
+      let currentStep = 0;
+      const timer = setInterval(() => {
+        currentStep++;
+        const progress = currentStep / steps;
+        setAnimatedNumbers({
+          students: Math.floor(targets.students * progress),
+          companies: Math.floor(targets.companies * progress),
+          success: Math.floor(targets.success * progress),
+        });
+        if (currentStep >= steps) {
+          clearInterval(timer);
+          setAnimatedNumbers(targets);
+        }
+      }, stepTime);
+    }, []);
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 100,
@@ -64,6 +111,13 @@ const Home: React.FC = () => {
       clearTimeout(statsTimer);
     };
   }, []);
+
+  // Number animation effect (initial trigger)
+  useEffect(() => {
+    if (animatedStats) {
+      animateNumbers();
+    }
+  }, [animatedStats, animateNumbers]);
 
   const features = [
     {
@@ -110,7 +164,7 @@ const Home: React.FC = () => {
     <Box>
       {/* Hero Section */}
       <Section
-        background="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+        background="#ffffff"
         fullHeight
         centerContent
         sx={{
@@ -125,29 +179,15 @@ const Home: React.FC = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+            background: 'transparent',
             pointerEvents: 'none',
           },
           '&::after': {
             content: '""',
             position: 'absolute',
-            top: '10%',
-            right: '10%',
-            width: '200px',
-            height: '200px',
-            background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
-            borderRadius: '50%',
-            animation: 'float 6s ease-in-out infinite',
-            pointerEvents: 'none',
+            display: 'none',
           },
-          '@keyframes float': {
-            '0%, 100%': {
-              transform: 'translateY(0px) rotate(0deg)',
-            },
-            '50%': {
-              transform: 'translateY(-20px) rotate(180deg)',
-            },
-          },
+          '@keyframes float': {},
         }}
       >
         <ResponsiveGrid spacing={6} alignItems="center" justifyContent="center">
@@ -163,10 +203,10 @@ const Home: React.FC = () => {
                       variant="h1"
                       component="h1"
                       sx={{
-                        color: '#f8fafc',
+                        color: '#000000',
                         fontWeight: 900,
                         fontSize: { xs: '3.5rem', md: '4.5rem', lg: '6rem' },
-                        textShadow: '0 4px 20px rgba(0,0,0,0.8), 0 2px 12px rgba(0,0,0,0.6)',
+                        textShadow: 'none',
                         letterSpacing: '-0.02em',
                         lineHeight: 1.1,
                         fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -178,35 +218,40 @@ const Home: React.FC = () => {
                     >
                       Your Career Journey
                     </Typography>
-                    <Typography
-                      variant="h2"
-                      component="h2"
-                      sx={{
-                        color: '#e2e8f0',
-                        fontWeight: 700,
-                        fontSize: { xs: '2rem', md: '2.5rem', lg: '3rem' },
-                        textShadow: '0 3px 12px rgba(0,0,0,0.6)',
-                        letterSpacing: '-0.01em',
-                        lineHeight: 1.2,
-                        fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-                        background: 'linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text'
-                      }}
-                    >
-                      Starts Here
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: { xs: 'center', md: 'flex-start' } }}>
+                      <img 
+                        src={CareezyLogo} 
+                        alt="Careezy Logo" 
+                        style={{ 
+                          height: '48px', 
+                          width: 'auto'
+                        }} 
+                      />
+                      <Typography
+                        variant="h2"
+                        component="h2"
+                        sx={{
+                          color: '#00796B',
+                          fontWeight: 700,
+                          fontSize: { xs: '2rem', md: '2.5rem', lg: '3rem' },
+                          letterSpacing: '-0.01em',
+                          lineHeight: 1.2,
+                          fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                        }}
+                      >
+                        Starts at Careezy
+                      </Typography>
+                    </Box>
                   </Box>
                   <Typography
                     variant="h4"
                     sx={{
-                      color: '#f1f5f9',
+                      color: '#000000',
                       mb: 3,
                       fontWeight: 600,
                       lineHeight: 1.4,
                       fontSize: { xs: '1.4rem', md: '1.8rem', lg: '2rem' },
-                      textShadow: '0 3px 12px rgba(0,0,0,0.6), 0 1px 4px rgba(0,0,0,0.4)',
+                      textShadow: 'none',
                       letterSpacing: '0.005em',
                       textAlign: { xs: 'center', md: 'left' },
                       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -221,7 +266,7 @@ const Home: React.FC = () => {
                     <Typography
                       variant="h6"
                       sx={{
-                        color: '#e2e8f0',
+                        color: '#000000',
                         mb: 5,
                         fontWeight: 500,
                         fontSize: { xs: '1.3rem', md: '1.5rem', lg: '1.7rem' },
@@ -255,156 +300,52 @@ const Home: React.FC = () => {
                         onClick={() => navigate('/register')}
                         endIcon={<ArrowForwardIcon />}
                         sx={{
-                          bgcolor: '#ffffff',
-                          color: '#1e40af',
-                          fontWeight: 900,
-                          px: 6,
-                          py: 2.5,
-                          fontSize: '1.4rem',
-                          borderRadius: 3,
-                          textTransform: 'none',
-                          boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
-                          position: 'relative',
-                          overflow: 'hidden',
-                          animation: 'pulse 2s ease-in-out infinite',
-                          fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-                          textRendering: 'optimizeLegibility',
-                          WebkitFontSmoothing: 'antialiased',
-                          MozOsxFontSmoothing: 'grayscale',
-                          letterSpacing: '0.02em',
-                          '&::before': {
-                            content: '""',
-                            position: 'absolute',
-                            top: 0,
-                            left: '-100%',
-                            width: '100%',
-                            height: '100%',
-                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
-                            transition: 'left 0.6s',
-                          },
-                          '&:hover': {
-                            bgcolor: 'grey.100',
-                            transform: 'translateY(-4px) scale(1.05)',
-                            boxShadow: '0 12px 40px rgba(0,0,0,0.25)',
-                            '&::before': {
-                              left: '100%',
-                            },
-                          },
-                          '@keyframes pulse': {
-                            '0%, 100%': { boxShadow: '0 8px 32px rgba(0,0,0,0.2)' },
-                            '50%': { boxShadow: '0 8px 32px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.5)' },
-                          },
-                        }}
-                      >
-                        Get Started Free
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        size="large"
-                        onClick={() => navigate('/resume-builder')}
-                        sx={{
-                          borderColor: '#ffffff',
+                          bgcolor: '#00796B',
                           color: '#ffffff',
-                          fontWeight: 800,
-                          px: 6,
-                          py: 2.5,
-                          fontSize: '1.4rem',
-                          borderRadius: 3,
-                          textTransform: 'none',
-                          borderWidth: '3px',
-                          position: 'relative',
-                          overflow: 'hidden',
-                          fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-                          textRendering: 'optimizeLegibility',
-                          WebkitFontSmoothing: 'antialiased',
-                          MozOsxFontSmoothing: 'grayscale',
-                          letterSpacing: '0.02em',
-                          textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                          '&::before': {
-                            content: '""',
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '0%',
-                            height: '100%',
-                            background: 'rgba(255,255,255,0.1)',
-                            transition: 'width 0.3s ease',
-                          },
-                          '&:hover': {
-                            bgcolor: 'rgba(255,255,255,0.15)',
-                            borderColor: 'white',
-                            transform: 'translateY(-4px) scale(1.05)',
-                            boxShadow: '0 8px 25px rgba(255,255,255,0.2)',
-                            '&::before': {
-                              width: '100%',
-                            },
-                          },
-                        }}
-                      >
-                        Try Demo
+                           fontWeight: 900,
+                           px: { xs: 4, sm: 5, md: 6 },
+                           py: { xs: 1.8, sm: 2.2, md: 2.5 },
+                           fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.4rem' },
+                           borderRadius: 3,
+                           textTransform: 'none',
+                           boxShadow: '0 10px 30px rgba(0,121,107,0.35)',
+                           position: 'relative',
+                           overflow: 'hidden',
+                           animation: 'pulse 2s ease-in-out infinite',
+                           fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                           textRendering: 'optimizeLegibility',
+                           WebkitFontSmoothing: 'antialiased',
+                           MozOsxFontSmoothing: 'grayscale',
+                           letterSpacing: '0.02em',
+                           '&::before': {
+                             content: '""',
+                             position: 'absolute',
+                             top: 0,
+                             left: '-100%',
+                             width: '100%',
+                             height: '100%',
+                             background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
+                             transition: 'left 0.6s',
+                           },
+                           '&:hover': {
+                            bgcolor: '#00796B',
+                             transform: 'translateY(-4px) scale(1.05)',
+                            boxShadow: '0 14px 36px rgba(0,121,107,0.4)',
+                             '&::before': {
+                               left: '100%',
+                             },
+                           },
+                           '@keyframes pulse': {
+                             '0%, 100%': { boxShadow: '0 8px 26px rgba(0,121,107,0.28)' },
+                             '50%': { boxShadow: '0 8px 26px rgba(0,121,107,0.36), 0 0 14px rgba(255,255,255,0.4)' },
+                           },
+                         }}
+                       >
+                         Get Started
                       </Button>
                     </Stack>
                   </Zoom>
-                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} alignItems="center">
-                    <Zoom in={animatedStats} timeout={800}>
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center',
-                        p: 2,
-                        borderRadius: 2,
-                        bgcolor: 'rgba(255,255,255,0.1)',
-                        backdropFilter: 'blur(10px)',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          bgcolor: 'rgba(255,255,255,0.15)',
-                          transform: 'scale(1.05)',
-                        }
-                      }}>
-                        <StarIcon sx={{ color: '#fbbf24', mr: 1, fontSize: 24 }} />
-                        <Typography variant="body1" sx={{ 
-                          color: 'white',
-                          fontWeight: 600,
-                          fontSize: '1.1rem',
-                          fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-                          textRendering: 'optimizeLegibility',
-                          WebkitFontSmoothing: 'antialiased',
-                          MozOsxFontSmoothing: 'grayscale',
-                          letterSpacing: '0.005em'
-                        }}>
-                          4.9/5 from 1000+ students
-                        </Typography>
-                      </Box>
-                    </Zoom>
-                    <Zoom in={animatedStats} timeout={1000}>
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center',
-                        p: 2,
-                        borderRadius: 2,
-                        bgcolor: 'rgba(255,255,255,0.1)',
-                        backdropFilter: 'blur(10px)',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          bgcolor: 'rgba(255,255,255,0.15)',
-                          transform: 'scale(1.05)',
-                        }
-                      }}>
-                        <TrendingUpIcon sx={{ color: '#10b981', mr: 1, fontSize: 24 }} />
-                        <Typography variant="body1" sx={{ 
-                          color: 'white',
-                          fontWeight: 600,
-                          fontSize: '1.1rem',
-                          fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-                          textRendering: 'optimizeLegibility',
-                          WebkitFontSmoothing: 'antialiased',
-                          MozOsxFontSmoothing: 'grayscale',
-                          letterSpacing: '0.005em'
-                        }}>
-                          95% success rate
-                        </Typography>
-                      </Box>
-                    </Zoom>
-                  </Stack>
+
                 </Box>
               </Fade>
             </ResponsiveGridItem>
@@ -447,8 +388,7 @@ const Home: React.FC = () => {
                           sx={{
                             p: 3,
                             textAlign: 'center',
-                            background: 'rgba(255,255,255,0.95)',
-                            backdropFilter: 'blur(10px)',
+                            background: '#ffffff',
                             borderRadius: 3,
                             boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
                             border: `2px solid ${feature.color}30`,
@@ -542,9 +482,9 @@ const Home: React.FC = () => {
           left: '5%',
           width: '100px',
           height: '100px',
-          background: 'radial-gradient(circle, rgba(102,126,234,0.1) 0%, transparent 70%)',
+          background: 'transparent',
           borderRadius: '50%',
-          animation: 'floatLeft 8s ease-in-out infinite',
+          animation: 'none',
         },
         '&::after': {
           content: '""',
@@ -553,19 +493,11 @@ const Home: React.FC = () => {
           right: '8%',
           width: '150px',
           height: '150px',
-          background: 'radial-gradient(circle, rgba(118,75,162,0.08) 0%, transparent 70%)',
+          background: 'transparent',
           borderRadius: '50%',
-          animation: 'floatRight 10s ease-in-out infinite',
+          animation: 'none',
         },
-        '@keyframes floatLeft': {
-          '0%, 100%': { transform: 'translateY(0px) translateX(0px)' },
-          '33%': { transform: 'translateY(-30px) translateX(20px)' },
-          '66%': { transform: 'translateY(20px) translateX(-15px)' },
-        },
-        '@keyframes floatRight': {
-          '0%, 100%': { transform: 'translateY(0px) translateX(0px)' },
-          '50%': { transform: 'translateY(-40px) translateX(-25px)' },
-        },
+
       }}>
         <Box sx={{ textAlign: 'center', mb: 8, position: 'relative', zIndex: 1 }}>
           <Slide direction="up" in={isVisible} timeout={1000}>
@@ -574,7 +506,7 @@ const Home: React.FC = () => {
               fontSize: { xs: '3rem', md: '4.2rem' },
               color: '#1e293b',
               mb: 3,
-              textShadow: '0 4px 20px rgba(30,41,59,0.3)',
+              textShadow: 'none',
               letterSpacing: '-0.02em',
               position: 'relative',
               fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -622,16 +554,15 @@ const Home: React.FC = () => {
 
         {/* Carousel Container */}
         <Box sx={{ 
-          position: 'relative',
-          width: '100%',
-          height: '500px',
-          overflow: 'hidden',
-          borderRadius: 4,
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255,255,255,0.2)',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
-        }}>
+           position: 'relative',
+           width: '100%',
+           height: '500px',
+           overflow: 'hidden',
+           borderRadius: 4,
+           background: '#ffffff',
+           border: '1px solid rgba(255,255,255,0.2)',
+           boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
+         }}>
           {/* Carousel Track */}
           <Box sx={{
             display: 'flex',
@@ -747,6 +678,61 @@ const Home: React.FC = () => {
             ))}
           </Box>
           
+          {/* Navigation Arrows */}
+          <Box
+            onClick={() => setCurrentFeature((prev) => (prev - 1 + features.length) % features.length)}
+            sx={{
+              position: 'absolute',
+              left: 20,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              bgcolor: 'rgba(0,0,0,0.5)',
+              color: 'white',
+              borderRadius: '50%',
+              width: 48,
+              height: 48,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              zIndex: 2,
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                bgcolor: 'rgba(0,0,0,0.7)',
+                transform: 'translateY(-50%) scale(1.1)'
+              }
+            }}
+          >
+            <ArrowBackIosIcon />
+          </Box>
+          
+          <Box
+            onClick={() => setCurrentFeature((prev) => (prev + 1) % features.length)}
+            sx={{
+              position: 'absolute',
+              right: 20,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              bgcolor: 'rgba(0,0,0,0.5)',
+              color: 'white',
+              borderRadius: '50%',
+              width: 48,
+              height: 48,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              zIndex: 2,
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                bgcolor: 'rgba(0,0,0,0.7)',
+                transform: 'translateY(-50%) scale(1.1)'
+              }
+            }}
+          >
+            <ArrowForwardIosIcon />
+          </Box>
+
           {/* Carousel Indicators */}
           <Box sx={{
             position: 'absolute',
@@ -765,11 +751,11 @@ const Home: React.FC = () => {
                   width: 12,
                   height: 12,
                   borderRadius: '50%',
-                  bgcolor: currentFeature === index ? 'white' : 'rgba(255,255,255,0.5)',
+                  bgcolor: currentFeature === index ? 'black' : 'rgba(0,0,0,0.3)',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
                   '&:hover': {
-                    bgcolor: 'white',
+                    bgcolor: 'black',
                     transform: 'scale(1.2)'
                   }
                 }}
@@ -780,7 +766,25 @@ const Home: React.FC = () => {
       </Section>
 
         {/* About Section */}
-        <Section id="about" background="linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)" centerContent>
+        <Section 
+          id="about" 
+            background="linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)" 
+          centerContent
+          ref={(el) => {
+            if (el && !animatedStats) {
+              const observer = new IntersectionObserver(
+                ([entry]) => {
+                  if (entry.isIntersecting) {
+                    setAnimatedStats(true);
+                    observer.disconnect();
+                  }
+                },
+                { threshold: 0.3 }
+              );
+              observer.observe(el);
+            }
+          }}
+        >
           <Fade in={trigger} timeout={800}>
             <Typography variant="h2" component="h2" gutterBottom sx={{
               fontWeight: 800,
@@ -818,22 +822,23 @@ const Home: React.FC = () => {
           </Fade>
           <ResponsiveGrid spacing={4} sx={{ mt: 4 }} justifyContent="center">
             {[
-              { number: '10,000+', title: 'Students Helped', desc: 'Thousands of students have successfully launched their careers with Careezy', color: '#2563eb' },
-              { number: '500+', title: 'Partner Companies', desc: 'We work with leading companies to bring you the best internship opportunities', color: '#10b981' },
-              { number: '95%', title: 'Success Rate', desc: 'Our users report significant improvement in their job application success', color: '#f59e0b' }
+              { key: 'students', target: 5000, number: animatedNumbers.students, suffix: '+', title: 'Students Helped', desc: 'Thousands of students have successfully launched their careers with Careezy', color: '#2563eb' },
+              { key: 'companies', target: 200, number: animatedNumbers.companies, suffix: '+', title: 'Partner Companies', desc: 'We work with leading companies to bring you the best internship opportunities', color: '#10b981' },
+              { key: 'success', target: 95, number: animatedNumbers.success, suffix: '%', title: 'Success Rate', desc: 'Our users report significant improvement in their job application success', color: '#f59e0b' }
             ].map((stat, index) => (
               <ResponsiveGridItem xs={12} sm={6} md={4} key={index}>
                 <Zoom in={trigger} timeout={1000 + index * 200}>
-                  <Box sx={{ 
-                    p: 4, 
-                    textAlign: 'center',
-                    borderRadius: 3,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: `0 20px 40px ${stat.color}20`,
-                    }
-                  }}>
+                  <Box onMouseEnter={() => animateNumbers(stat.key as any, stat.target)}
+                    sx={{ 
+                      p: 4, 
+                      textAlign: 'center',
+                      borderRadius: 3,
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'translateY(-8px)',
+                        boxShadow: `0 20px 40px ${stat.color}20`,
+                      }
+                    }}>
                     <Typography variant="h3" gutterBottom sx={{
                       fontWeight: 900,
                       color: stat.color,
@@ -844,7 +849,7 @@ const Home: React.FC = () => {
                       WebkitFontSmoothing: 'antialiased',
                       MozOsxFontSmoothing: 'grayscale'
                     }}>
-                      {stat.number}
+                      {stat.number.toLocaleString()}{stat.suffix}
                     </Typography>
                     <Typography variant="h5" gutterBottom sx={{
                       fontWeight: 700,
@@ -924,6 +929,9 @@ const Home: React.FC = () => {
                   sx={{
                     color: 'white',
                     bgcolor: 'rgba(255,255,255,0.1)',
+                    width: 60,
+                    height: 60,
+                    fontSize: '2rem',
                     '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
                   }}
                 >
@@ -933,6 +941,9 @@ const Home: React.FC = () => {
                   sx={{
                     color: 'white',
                     bgcolor: 'rgba(255,255,255,0.1)',
+                    width: 60,
+                    height: 60,
+                    fontSize: '2rem',
                     '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
                   }}
                 >
@@ -942,6 +953,9 @@ const Home: React.FC = () => {
                   sx={{
                     color: 'white',
                     bgcolor: 'rgba(255,255,255,0.1)',
+                    width: 60,
+                    height: 60,
+                    fontSize: '2rem',
                     '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
                   }}
                 >
