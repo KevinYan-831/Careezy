@@ -53,7 +53,10 @@ const Login: React.FC = () => {
     setError('');
     
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', data);
+      const response = await axios.post('/api/auth/login', {
+        ...data,
+        email: data.email.trim().toLowerCase(),
+      });
       
       // Store token in localStorage
       localStorage.setItem('token', response.data.token);

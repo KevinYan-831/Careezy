@@ -97,10 +97,11 @@ const Register: React.FC = () => {
     setError('');
     
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', {
+      const response = await axios.post('/api/auth/register', {
         firstName: data.firstName,
         lastName: data.lastName,
-        email: data.email,
+        // Normalize email to lowercase to match backend uniqueness constraint
+        email: data.email.trim().toLowerCase(),
         password: data.password,
         profileType: data.profileType,
       });
