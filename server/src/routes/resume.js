@@ -107,8 +107,9 @@ router.patch('/section/:sectionName', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Resume not found' });
     }
 
-    // Update specific section
-    resume[sectionName] = sectionData;
+    // Update specific section; allow activities alias
+    const targetSection = sectionName === 'extracurriculars' ? 'activities' : sectionName;
+    resume[targetSection] = sectionData;
     
     // Regenerate LaTeX code
     resume.latexCode = generateLatexResume(resume);

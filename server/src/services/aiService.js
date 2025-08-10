@@ -15,7 +15,7 @@ async function callDeepSeekAPI(prompt, systemPrompt) {
       return 'Mock AI response - DeepSeek API not configured';
     }
 
-    const response = await axios.post<DeepSeekResponse>(
+    const response = await axios.post(
       DEEPSEEK_API_URL,
       {
         model: 'deepseek-chat',
@@ -94,7 +94,86 @@ async function parseCommonAppData(commonAppData) {
   
   try {
     const response = await callDeepSeekAPI(prompt, systemPrompt);
-    return JSON.parse(response);
+    let parsed;
+    try {
+      parsed = JSON.parse(response);
+    } catch (e) {
+      // If model returned fenced code or extra text, try to extract JSON
+      const match = response.match(/\{[\s\S]*\}/);
+      parsed = match ? JSON.parse(match[0]) : null;
+    }
+
+    if (!parsed || typeof parsed !== 'object') {
+      throw new Error('Invalid AI response format');
+    }
+
+    // Normalize shapes to match our schema/frontend
+    if (Array.isArray(parsed.education)) {
+      parsed.education = parsed.education.map((edu) => ({
+        ...edu,
+        coursework: Array.isArray(edu?.coursework) ? edu.coursework.join(', ') : (edu?.coursework || ''),
+        gpa: typeof edu?.gpa === 'number' ? String(edu.gpa) : (edu?.gpa || ''),
+      }));
+    }
+
+    if (Array.isArray(parsed.experience)) {
+      parsed.experience = parsed.experience.map((exp) => ({
+        title: exp?.title || exp?.position || '',
+        company: exp?.company || '',
+        location: exp?.location || '',
+        startDate: exp?.startDate || '',
+        endDate: exp?.endDate || '',
+        current: !!exp?.current,
+        description: Array.isArray(exp?.description) ? exp.description.join('\n• ') : (exp?.description || ''),
+        achievements: Array.isArray(exp?.achievements) ? exp.achievements.join('\n• ') : (exp?.achievements || ''),
+        skills: Array.isArray(exp?.skills) ? exp.skills.join(', ') : (exp?.skills || ''),
+        type: exp?.type || '',
+      }));
+    }
+
+    if (Array.isArray(parsed.projects)) {
+      parsed.projects = parsed.projects.map((project) => ({
+        ...project,
+        technologies: Array.isArray(project?.technologies) ? project.technologies.join(', ') : (project?.technologies || ''),
+        highlights: Array.isArray(project?.highlights) ? project.highlights.join('\n• ') : (project?.highlights || ''),
+        challenges: Array.isArray(project?.challenges) ? project.challenges.join('\n• ') : (project?.challenges || ''),
+      }));
+    }
+
+    if (parsed.skills) {
+      const skills = parsed.skills;
+      parsed.skills = {
+        technical: Array.isArray(skills?.technical) ? skills.technical.join(', ') : (skills?.technical || ''),
+        soft: Array.isArray(skills?.other) ? skills.other.join(', ') : (skills?.soft || skills?.other || ''),
+        languages: Array.isArray(skills?.languages)
+          ? skills.languages.map((lang) =>
+              typeof lang === 'string' ? { language: lang, proficiency: 'intermediate' } : lang
+            )
+          : Array.isArray(skills?.languages)
+            ? skills.languages
+            : [],
+        certifications: Array.isArray(skills?.certifications) ? skills.certifications.join(', ') : (skills?.certifications || ''),
+      };
+    }
+
+    // Map extracurriculars -> activities
+    if (Array.isArray(parsed.extracurriculars)) {
+      parsed.activities = parsed.extracurriculars.map((act) => ({
+        name: act?.activity || act?.name || '',
+        position: act?.role || act?.position || '',
+        organization: act?.organization || '',
+        location: act?.location || '',
+        description: Array.isArray(act?.description) ? act.description.join('\n• ') : (act?.description || ''),
+        achievements: Array.isArray(act?.achievements) ? act.achievements.join('\n• ') : (act?.achievements || ''),
+        skillsDeveloped: Array.isArray(act?.skillsDeveloped) ? act.skillsDeveloped.join(', ') : (act?.skillsDeveloped || ''),
+        startDate: act?.startDate || '',
+        endDate: act?.endDate || '',
+        current: !!act?.current,
+      }));
+      delete parsed.extracurriculars;
+    }
+
+    return parsed;
   } catch (error) {
     console.error('Error parsing Common App data:', error);
     // Return a basic structure if AI fails

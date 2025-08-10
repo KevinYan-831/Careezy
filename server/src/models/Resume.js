@@ -8,9 +8,9 @@ const ResumeSchema = new Schema({
     required: true
   },
   personalInfo: {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    email: { type: String, required: true },
+    firstName: { type: String, required: false },
+    lastName: { type: String, required: false },
+    email: { type: String, required: false },
     phone: String,
     address: String,
     linkedin: String,
@@ -20,39 +20,64 @@ const ResumeSchema = new Schema({
   education: [{
     institution: { type: String, required: true },
     degree: { type: String, required: true },
-    major: String,
-    gpa: Number,
-    startDate: { type: Date, required: true },
+    field: String,
+    location: String,
+    honors: String,
+    coursework: String,
+    gpa: String,
+    startDate: { type: Date },
     endDate: Date,
     current: { type: Boolean, default: false }
   }],
   experience: [{
-    company: { type: String, required: true },
-    position: { type: String, required: true },
-    description: { type: String, required: true },
-    startDate: { type: Date, required: true },
+    title: { type: String },
+    company: { type: String },
+    location: String,
+    type: String,
+    description: { type: String },
+    achievements: String,
+    skills: String,
+    startDate: { type: Date },
     endDate: Date,
     current: { type: Boolean, default: false }
   }],
   projects: [{
     name: { type: String, required: true },
     description: { type: String, required: true },
-    technologies: [String],
-    link: String,
-    startDate: { type: Date, required: true },
+    technologies: String,
+    role: String,
+    teamSize: String,
+    githubUrl: String,
+    liveUrl: String,
+    highlights: String,
+    challenges: String,
+    startDate: { type: Date },
     endDate: Date
   }],
   skills: {
-    technical: [String],
-    languages: [String],
-    other: [String]
+    technical: String,
+    technicalOther: String,
+    soft: String,
+    softOther: String,
+    certifications: String,
+    languages: [{
+      language: String,
+      proficiency: String
+    }]
   },
-  extracurriculars: [{
-    organization: { type: String, required: true },
-    role: { type: String, required: true },
-    description: { type: String, required: true },
-    startDate: { type: Date, required: true },
-    endDate: Date
+  activities: [{
+    name: String,
+    type: String,
+    organization: String,
+    position: String,
+    location: String,
+    hoursPerWeek: String,
+    description: String,
+    achievements: String,
+    skillsDeveloped: String,
+    startDate: { type: Date },
+    endDate: Date,
+    current: { type: Boolean, default: false }
   }],
   latexCode: String
 }, {

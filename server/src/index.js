@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth');
 const resumeRoutes = require('./routes/resume');
 const internshipRoutes = require('./routes/internship');
 const aiRoutes = require('./routes/ai');
+const careerRoutes = require('./routes/career');
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/internships', internshipRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/career', careerRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

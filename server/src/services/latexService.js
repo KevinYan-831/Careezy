@@ -8,7 +8,8 @@ function generateLatexResume(resumeData) {
     experience = [],
     projects = [],
     skills = {},
-    extracurriculars = []
+    extracurriculars = [],
+    activities = []
   } = resumeData;
 
   return `\\documentclass[letterpaper,11pt]{article}
@@ -112,6 +113,7 @@ ${projects.length > 0 ? generateProjectsSection(projects) : ''}
 ${Object.keys(skills).length > 0 ? generateSkillsSection(skills) : ''}
 
 ${extracurriculars.length > 0 ? generateExtracurricularsSection(extracurriculars) : ''}
+${activities.length > 0 ? generateActivitiesSection(activities) : ''}
 
 \\end{document}`;
 }
@@ -124,7 +126,8 @@ ${education.map(edu => `    \\resumeSubheading
       {${edu.institution || ''}}{${edu.location || ''}}
       {${edu.degree || ''} in ${edu.field || ''}}{${edu.startDate || ''} -- ${edu.endDate || ''}}
       ${edu.gpa ? `\\resumeItem{GPA: ${edu.gpa}}` : ''}
-      ${edu.coursework && edu.coursework.length > 0 ? `\\resumeItem{Relevant Coursework: ${edu.coursework.join(', ')}}` : ''}`).join('\n')}
+      ${edu.coursework ? `\\resumeItem{Relevant Coursework: ${latexSafe(edu.coursework)}}` : ''}
+      ${edu.honors ? `\\resumeItem{Honors: ${latexSafe(edu.honors)}}` : ''}`).join('\n')}
   \\resumeSubHeadingListEnd`;
 }
 
@@ -136,7 +139,9 @@ ${experience.map(exp => `    \\resumeSubheading
       {${exp.title || ''}}{${exp.startDate || ''} -- ${exp.endDate || ''}}
       {${exp.company || ''}}{${exp.location || ''}}
       \\resumeItemListStart
-${exp.description && exp.description.length > 0 ? exp.description.map((desc) => `        \resumeItem{${desc}}`).join('\n') : '        \resumeItem{Description not provided}'}
+      ${exp.description ? `\\resumeItem{${latexSafe(exp.description)}}` : ''}
+      ${exp.achievements ? `\\resumeItem{${latexSafe(exp.achievements)}}` : ''}
+      ${exp.skills ? `\\resumeItem{Skills: ${latexSafe(exp.skills)}}` : ''}
       \\resumeItemListEnd`).join('\n')}
   \\resumeSubHeadingListEnd`;
 }
@@ -146,9 +151,11 @@ function generateProjectsSection(projects) {
 \\section{Projects}
     \\resumeSubHeadingListStart
 ${projects.map(project => `      \\resumeProjectHeading
-          {\\textbf{${project.name || ''}} $|$ \\emph{${project.technologies ? project.technologies.join(', ') : ''}}}{${project.startDate || ''} -- ${project.endDate || ''}}
+          {\\textbf{${project.name || ''}} $|$ \\emph{${project.technologies || ''}}}{${project.startDate || ''} -- ${project.endDate || ''}}
           \\resumeItemListStart
-            \\resumeItem{${project.description || 'Project description not provided'}}
+            \\resumeItem{${latexSafe(project.description || 'Project description not provided')}}
+            ${project.role ? `\\resumeItem{Role: ${latexSafe(project.role)}}` : ''}
+            ${project.highlights ? `\\resumeItem{${latexSafe(project.highlights)}}` : ''}
           \\resumeItemListEnd`).join('\n')}
     \\resumeSubHeadingListEnd`;
 }
@@ -187,9 +194,39 @@ ${extracurriculars.map(activity => `    \\resumeSubheading
       {${activity.activity || ''}}{${activity.startDate || ''} -- ${activity.endDate || ''}}
       {${activity.role || ''}}{}
       \\resumeItemListStart
-        \\resumeItem{${activity.description || 'Activity description not provided'}}
+        \\resumeItem{${latexSafe(activity.description || 'Activity description not provided')}}
       \\resumeItemListEnd`).join('\n')}
   \\resumeSubHeadingListEnd`;
+}
+
+function generateActivitiesSection(activities) {
+  return `%-----------EXTRACURRICULAR ACTIVITIES-----------
+\\section{Extracurricular Activities}
+  \\resumeSubHeadingListStart
+${activities.map(activity => `    \\resumeSubheading
+      {${activity.name || ''}}{${activity.startDate || ''} -- ${activity.current ? 'Present' : (activity.endDate || '')}}
+      {${activity.position || ''} $|$ ${activity.organization || ''}}{${activity.location || ''}}
+      \\resumeItemListStart
+        ${activity.description ? `\\resumeItem{${latexSafe(activity.description)}}` : ''}
+        ${activity.achievements ? `\\resumeItem{${latexSafe(activity.achievements)}}` : ''}
+        ${activity.skillsDeveloped ? `\\resumeItem{Skills: ${latexSafe(activity.skillsDeveloped)}}` : ''}
+      \\resumeItemListEnd`).join('\n')}
+  \\resumeSubHeadingListEnd`;
+}
+
+function latexSafe(text) {
+  if (!text || typeof text !== 'string') return text || '';
+  return text
+    .replace(/\\/g, '\\\\')
+    .replace(/\{/g, '\\{')
+    .replace(/\}/g, '\\}')
+    .replace(/\$/g, '\\$')
+    .replace(/#/g, '\\#')
+    .replace(/%/g, '\\%')
+    .replace(/&/g, '\\&')
+    .replace(/\^/g, '\\^{}')
+    .replace(/_/g, '\\_')
+    .replace(/~/g, '\\textasciitilde{}');
 }
 
 // Alternative template for a more modern look

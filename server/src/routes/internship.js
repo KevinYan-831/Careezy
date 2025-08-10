@@ -1,7 +1,7 @@
 const express = require('express');
 const Internship = require('../models/Internship');
 const Resume = require('../models/Resume');
-const { authenticateToken, AuthRequest } = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/auth');
 const { calculateMatchScore } = require('../services/aiService');
 
 const router = express.Router();
