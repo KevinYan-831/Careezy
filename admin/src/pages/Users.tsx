@@ -26,6 +26,7 @@ import {
   Delete as DeleteIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 
 interface User {
   _id: string;
@@ -42,6 +43,7 @@ const Users: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { token } = useAuth();
 
   useEffect(() => {
     fetchUsers();
@@ -49,39 +51,26 @@ const Users: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      // Mock data for now - replace with actual API call
-      const mockUsers: User[] = [
-        {
-          _id: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john.doe@email.com',
-          profileType: 'student',
-          joinDate: '2024-01-15',
+      if (token) {
+        const res = await axios.get('/api/admin/users', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const apiUsers: User[] = (res.data?.users || []).map((u: any) => ({
+          _id: u._id,
+          firstName: u.firstName,
+          lastName: u.lastName,
+          email: u.email,
+          profileType: u.profileType,
+          joinDate: u.createdAt,
           isActive: true,
-        },
-        {
-          _id: '2',
-          firstName: 'Jane',
-          lastName: 'Smith',
-          email: 'jane.smith@email.com',
-          profileType: 'professional',
-          joinDate: '2024-02-20',
-          isActive: true,
-        },
-        {
-          _id: '3',
-          firstName: 'Mike',
-          lastName: 'Johnson',
-          email: 'mike.johnson@email.com',
-          profileType: 'student',
-          joinDate: '2024-03-10',
-          isActive: false,
-        },
-      ];
-      setUsers(mockUsers);
+        }));
+        setUsers(apiUsers);
+        return;
+      }
+      setUsers([]);
     } catch (error) {
       console.error('Error fetching users:', error);
+      setUsers([]);
     }
   };
 

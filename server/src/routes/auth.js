@@ -8,7 +8,7 @@ const router = express.Router();
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, firstName, lastName, profileType } = req.body;
+    const { email, password, firstName, lastName, profileType, role } = req.body;
 
     // Normalize email to avoid case-sensitive duplicates
     const normalizedEmail = (email || '').trim().toLowerCase();
@@ -29,14 +29,15 @@ router.post('/register', async (req, res) => {
       password: hashedPassword,
       firstName,
       lastName,
-      profileType
+      profileType,
+      role: role === 'admin' ? 'admin' : 'user'
     });
 
     await user.save();
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET || 'fallback_secret',
       { expiresIn: '7d' }
     );
@@ -49,7 +50,8 @@ router.post('/register', async (req, res) => {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        profileType: user.profileType
+        profileType: user.profileType,
+        role: user.role
       }
     });
   } catch (error) {
@@ -94,7 +96,8 @@ router.post('/login', async (req, res) => {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        profileType: user.profileType
+        profileType: user.profileType,
+        role: user.role
       }
     });
   } catch (error) {

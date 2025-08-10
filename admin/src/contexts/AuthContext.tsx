@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import axios from 'axios';
 
 interface User {
   id: string;
@@ -12,6 +13,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
+  token: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -44,10 +46,12 @@ const ADMIN_USERS = [
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if user is already logged in (from localStorage)
     const savedUser = localStorage.getItem('adminUser');
+    const savedToken = localStorage.getItem('adminToken');
     if (savedUser) {
       try {
         setUser(JSON.parse(savedUser));
@@ -55,19 +59,42 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         localStorage.removeItem('adminUser');
       }
     }
+    if (savedToken) {
+      setToken(savedToken);
+    }
     setIsLoading(false);
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    try {
+      // Try real backend first
+      const res = await axios.post('/api/auth/login', { email, password });
+      const roleFromApi = res.data?.user?.role as string | undefined;
+      if (roleFromApi === 'admin' || roleFromApi === 'super_admin') {
+        const u: User = {
+          id: res.data.user.id,
+          email: res.data.user.email,
+          name: `${res.data.user.firstName || ''} ${res.data.user.lastName || ''}`.trim(),
+          role: (roleFromApi as 'admin' | 'super_admin') || 'admin',
+        };
+        setUser(u);
+        setToken(res.data.token);
+        localStorage.setItem('adminUser', JSON.stringify(u));
+        localStorage.setItem('adminToken', res.data.token);
+        setIsLoading(false);
+        return true;
+      }
+    } catch {
+      // fallback to demo accounts
+    }
+
+    // Demo login fallback (no backend role)
+    await new Promise(resolve => setTimeout(resolve, 500));
     const adminUser = ADMIN_USERS.find(
       user => user.email === email && user.password === password
     );
-    
     if (adminUser) {
       const userWithoutPassword = {
         id: adminUser.id,
@@ -75,13 +102,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         name: adminUser.name,
         role: adminUser.role
       };
-      
       setUser(userWithoutPassword);
+      setToken(null);
       localStorage.setItem('adminUser', JSON.stringify(userWithoutPassword));
+      localStorage.removeItem('adminToken');
       setIsLoading(false);
       return true;
     }
-    
+
     setIsLoading(false);
     return false;
   };
@@ -89,10 +117,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = () => {
     setUser(null);
     localStorage.removeItem('adminUser');
+    setToken(null);
+    localStorage.removeItem('adminToken');
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, isLoading, token }}>
       {children}
     </AuthContext.Provider>
   );

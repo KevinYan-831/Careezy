@@ -7,6 +7,7 @@ const resumeRoutes = require('./routes/resume');
 const internshipRoutes = require('./routes/internship');
 const aiRoutes = require('./routes/ai');
 const careerRoutes = require('./routes/career');
+const adminRoutes = require('./routes/admin');
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use('/api/resume', resumeRoutes);
 app.use('/api/internships', internshipRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/career', careerRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

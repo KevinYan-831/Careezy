@@ -1014,6 +1014,11 @@ const Home: React.FC = () => {
               </Typography>
               <Stack direction="row" spacing={2}>
                 <IconButton
+                  component="a"
+                  href="https://www.linkedin.com/in/kevin-yan-b27054360?lipi=urn%3Ali%3Apage%3Ad_UNKNOWN_ROUTE_profile-edit.topcard%3BSjhjYcYuTJGJ%2F3sRphjGAA%3D%3D"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
                   sx={{
                     color: 'white',
                     bgcolor: 'rgba(255,255,255,0.1)',
@@ -1026,6 +1031,11 @@ const Home: React.FC = () => {
                   <LinkedInIcon />
                 </IconButton>
                 <IconButton
+                  component="a"
+                  href="https://github.com/KevinYan-831/Careezy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="GitHub"
                   sx={{
                     color: 'white',
                     bgcolor: 'rgba(255,255,255,0.1)',
@@ -1038,6 +1048,11 @@ const Home: React.FC = () => {
                   <GitHubIcon />
                 </IconButton>
                 <IconButton
+                  component="a"
+                  href="https://www.instagram.com/jixinyan831?igsh=dDM1bG93MmlycDJj&utm_source=qr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
                   sx={{
                     color: 'white',
                     bgcolor: 'rgba(255,255,255,0.1)',
