@@ -16,12 +16,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import {
-  Visibility,
-  VisibilityOff,
-  Google as GoogleIcon,
-  Facebook as FacebookIcon,
-} from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { GoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 
 interface LoginFormData {
@@ -29,9 +25,13 @@ interface LoginFormData {
   password: string;
 }
 
+const passwordRules = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 const schema = yup.object({
   email: yup.string().email('Invalid email format').required('Email is required'),
-  password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+  password: yup
+    .string()
+    .matches(passwordRules, 'At least 8 characters, including a letter, a number, and a special character')
+    .required('Password is required'),
 });
 
 const Login: React.FC = () => {
@@ -75,10 +75,7 @@ const Login: React.FC = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSocialLogin = (provider: string) => {
-    // Placeholder for social login implementation
-    setError(`${provider} login not implemented yet`);
-  };
+  const handleSocialLogin = (_provider: string) => {};
 
   return (
     <Container component="main" maxWidth="sm">
@@ -176,26 +173,23 @@ const Login: React.FC = () => {
               </Typography>
             </Divider>
 
-            {/* Social Login Buttons */}
-            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-              <Button
-                fullWidth
-                variant="outlined"
-                startIcon={<GoogleIcon />}
-                onClick={() => handleSocialLogin('Google')}
-                sx={{ py: 1.5 }}
-              >
-                Google
-              </Button>
-              <Button
-                fullWidth
-                variant="outlined"
-                startIcon={<FacebookIcon />}
-                onClick={() => handleSocialLogin('Facebook')}
-                sx={{ py: 1.5 }}
-              >
-                Facebook
-              </Button>
+            {/* Google Login */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  try {
+                    if (!credentialResponse.credential) throw new Error('No credential received');
+                    const resp = await axios.post('/api/auth/google', { idToken: credentialResponse.credential });
+                    localStorage.setItem('token', resp.data.token);
+                    localStorage.setItem('user', JSON.stringify(resp.data.user));
+                    navigate('/dashboard');
+                  } catch (e: any) {
+                    setError(e.response?.data?.message || 'Google login failed. Please try again.');
+                  }
+                }}
+                onError={() => setError('Google login failed. Please try again.')}
+                useOneTap={false}
+              />
             </Box>
 
             <Box sx={{ textAlign: 'center' }}>
