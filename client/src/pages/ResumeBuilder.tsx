@@ -37,6 +37,7 @@ import ProjectsForm from '../components/resume/ProjectsForm';
 import SkillsForm from '../components/resume/SkillsForm';
 import ExtracurricularsForm from '../components/resume/ExtracurricularsForm';
 import ResumePreview from '../components/resume/ResumePreview';
+import { CircularProgress } from '@mui/material';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -67,6 +68,8 @@ const ResumeBuilder: React.FC = () => {
   const [commonAppDialog, setCommonAppDialog] = useState(false);
   const [commonAppData, setCommonAppData] = useState('');
   const [template, setTemplate] = useState<'default' | 'custom'>('default');
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   
   const methods = useForm({
     defaultValues: {
@@ -97,6 +100,25 @@ const ResumeBuilder: React.FC = () => {
 
   const { handleSubmit, watch, reset } = methods;
   const watchedData = watch();
+  // Generate compiled PDF preview on demand
+  const refreshPreview = async () => {
+    try {
+      setPreviewLoading(true);
+      await autoSave();
+      const token = localStorage.getItem('token');
+      const resp = await axios.get('/api/resume/pdf', {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: 'blob',
+      });
+      const url = URL.createObjectURL(resp.data);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(url);
+    } catch (e) {
+      console.error('Preview generation error:', e);
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
 
   // Load existing resume on component mount
   useEffect(() => {
@@ -119,7 +141,7 @@ const ResumeBuilder: React.FC = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-       const response = await axios.get('http://localhost:5000/api/resume', {
+       const response = await axios.get('/api/resume', {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -137,7 +159,7 @@ const ResumeBuilder: React.FC = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-       await axios.post(`http://localhost:5000/api/resume${template === 'custom' ? '?template=custom' : ''}`,
+       await axios.post(`/api/resume${template === 'custom' ? '?template=custom' : ''}`,
          watchedData, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -155,7 +177,7 @@ const ResumeBuilder: React.FC = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`http://localhost:5000/api/resume${template === 'custom' ? '?template=custom' : ''}`,
+      await axios.post(`/api/resume${template === 'custom' ? '?template=custom' : ''}`,
         data, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -171,14 +193,18 @@ const ResumeBuilder: React.FC = () => {
   const handleDownloadPDF = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/resume/pdf', {
+      const resp = await axios.get('/api/resume/pdf', {
         headers: { Authorization: `Bearer ${token}` },
+        responseType: 'blob',
       });
-      
-      // For now, just show the LaTeX code
-      // In production, this would trigger a PDF download
-      console.log('LaTeX Code:', response.data.latexCode);
-      alert('PDF generation feature coming soon! Check console for LaTeX code.');
+      const url = URL.createObjectURL(resp.data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'resume.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
     } catch (error) {
       console.error('PDF generation error:', error);
     }
@@ -189,8 +215,8 @@ const ResumeBuilder: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      const response = await axios.post(
-        `http://localhost:5000/api/resume/parse-common-app${template === 'custom' ? '?template=custom' : ''}`,
+       const response = await axios.post(
+        `/api/resume/parse-common-app${template === 'custom' ? '?template=custom' : ''}`,
         { commonAppData: JSON.parse(commonAppData) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -307,8 +333,23 @@ const ResumeBuilder: React.FC = () => {
               <Typography variant="h6" fontWeight={600}>
                 Live Preview
               </Typography>
+              <Button sx={{ ml: 2 }} size="small" onClick={refreshPreview} disabled={previewLoading}>
+                {previewLoading ? 'Rendering…' : 'Refresh PDF Preview'}
+              </Button>
             </Box>
-            <ResumePreview data={watchedData} />
+            {previewLoading && (
+              <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CircularProgress size={20} />
+                <Typography variant="body2">Rendering preview…</Typography>
+              </Box>
+            )}
+            {previewUrl ? (
+              <Box sx={{ height: '75vh' }}>
+                <iframe src={previewUrl} title="Resume PDF Preview" style={{ width: '100%', height: '100%', border: 'none' }} />
+              </Box>
+            ) : (
+              <ResumePreview data={watchedData} />
+            )}
           </Paper>
         </Grid>
       </Grid>

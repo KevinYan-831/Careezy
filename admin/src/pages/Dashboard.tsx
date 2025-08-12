@@ -32,24 +32,9 @@ const Dashboard: React.FC = () => {
     successRate: 0,
   });
 
-  const [userGrowthData] = useState([
-    { month: 'Jan', users: 120 },
-    { month: 'Feb', users: 180 },
-    { month: 'Mar', users: 250 },
-    { month: 'Apr', users: 320 },
-    { month: 'May', users: 410 },
-    { month: 'Jun', users: 520 },
-  ]);
+  const [userGrowthData, setUserGrowthData] = useState<{ month: string; users: number }[]>([]);
 
-  const [applicationData] = useState([
-    { day: 'Mon', applications: 45 },
-    { day: 'Tue', applications: 52 },
-    { day: 'Wed', applications: 38 },
-    { day: 'Thu', applications: 61 },
-    { day: 'Fri', applications: 55 },
-    { day: 'Sat', applications: 28 },
-    { day: 'Sun', applications: 22 },
-  ]);
+  const [applicationData, setApplicationData] = useState<{ day: string; applications: number }[]>([]);
 
   useEffect(() => {
     fetchStats();
@@ -57,13 +42,33 @@ const Dashboard: React.FC = () => {
 
   const fetchStats = async () => {
     try {
-      // Mock data for now - replace with actual API calls
+      const token = localStorage.getItem('adminToken');
+      const res = await axios.get('/api/admin/stats', token ? { headers: { Authorization: `Bearer ${token}` } } : undefined);
+      const s = res.data || {};
       setStats({
-        totalUsers: 1247,
-        totalInternships: 89,
-        activeApplications: 342,
-        successRate: 68.5,
+        totalUsers: s.totalUsers || 0,
+        totalInternships: s.totalInternships || 0,
+        activeApplications: s.activeApplications || 0,
+        successRate: s.successRate || 0,
       });
+      // Simple derived demo metrics for charts
+      setUserGrowthData([
+        { month: 'Jan', users: Math.max(10, Math.floor((s.totalUsers || 0) * 0.2)) },
+        { month: 'Feb', users: Math.max(10, Math.floor((s.totalUsers || 0) * 0.35)) },
+        { month: 'Mar', users: Math.max(10, Math.floor((s.totalUsers || 0) * 0.5)) },
+        { month: 'Apr', users: Math.max(10, Math.floor((s.totalUsers || 0) * 0.65)) },
+        { month: 'May', users: Math.max(10, Math.floor((s.totalUsers || 0) * 0.8)) },
+        { month: 'Jun', users: s.totalUsers || 0 },
+      ]);
+      setApplicationData([
+        { day: 'Mon', applications: 5 },
+        { day: 'Tue', applications: 9 },
+        { day: 'Wed', applications: 7 },
+        { day: 'Thu', applications: 12 },
+        { day: 'Fri', applications: 8 },
+        { day: 'Sat', applications: 4 },
+        { day: 'Sun', applications: 3 },
+      ]);
     } catch (error) {
       console.error('Error fetching stats:', error);
     }

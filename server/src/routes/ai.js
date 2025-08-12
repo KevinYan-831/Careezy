@@ -8,6 +8,7 @@ const router = express.Router();
 
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 if (!DEEPSEEK_API_KEY) {
   console.warn('DEEPSEEK_API_KEY not found in environment variables');
@@ -40,10 +41,26 @@ const callDeepSeekAPI = async (messages, maxTokens = 1000) => {
   }
 };
 
+// Helper to call OpenAI chat completions
+const callOpenAI = async (messages, maxTokens = 1000, model = 'gpt-4o-mini') => {
+  if (!OPENAI_API_KEY) throw new Error('OpenAI API key not configured');
+  try {
+    const response = await axios.post(
+      'https://api.openai.com/v1/chat/completions',
+      { model, messages, max_tokens: maxTokens, temperature: 0.7 },
+      { headers: { Authorization: `Bearer ${OPENAI_API_KEY}` } }
+    );
+    return response.data.choices[0]?.message?.content || '';
+  } catch (error) {
+    console.error('OpenAI API Error:', error.response?.data || error.message);
+    throw new Error('Failed to get AI response');
+  }
+};
+
 // Career coaching endpoint
 router.post('/career-advice', async (req, res) => {
   try {
-    const { userProfile, question, context } = req.body;
+    const { userProfile, question, context, isPremium } = req.body;
 
     if (!question) {
       return res.status(400).json({ error: 'Question is required' });
@@ -65,7 +82,19 @@ Please provide detailed, actionable career advice.`;
       { role: 'user', content: userPrompt },
     ];
 
-    const advice = await callDeepSeekAPI(messages, 1500);
+    let advice;
+    // Default: DeepSeek for all users
+    // Premium: use OpenAI if key present, else still DeepSeek
+    if (isPremium && OPENAI_API_KEY) {
+      try {
+        advice = await callOpenAI(messages, 1500);
+      } catch (e) {
+        console.warn('OpenAI failed, falling back to DeepSeek');
+        advice = await callDeepSeekAPI(messages, 1500);
+      }
+    } else {
+      advice = await callDeepSeekAPI(messages, 1500);
+    }
 
     res.json({
       success: true,

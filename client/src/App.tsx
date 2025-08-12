@@ -10,6 +10,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import ResumeBuilder from './pages/ResumeBuilder';
 import InternshipExplorer from './pages/InternshipExplorer';
+import CareerCoaching from './pages/CareerCoaching';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -174,6 +175,7 @@ function App() {
               <Route path="/resume" element={<ProtectedRoute><ResumeBuilder /></ProtectedRoute>} />
               <Route path="/internships" element={<ProtectedRoute><InternshipExplorer /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/career" element={<ProtectedRoute><CareerCoaching /></ProtectedRoute>} />
             </Routes>
           </Box>
         </Box>

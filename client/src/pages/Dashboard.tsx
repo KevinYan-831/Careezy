@@ -280,7 +280,7 @@ const Dashboard: React.FC = () => {
             </CardContent>
             
             <CardActions>
-              <Button size="small" startIcon={<EditIcon />}>
+              <Button size="small" startIcon={<EditIcon />} onClick={() => navigate('/resume?section=personal')}>
                 Edit Profile
               </Button>
             </CardActions>
@@ -555,14 +555,15 @@ const Dashboard: React.FC = () => {
               </Grid>
               
               <Grid item xs={12} sm={6} md={3}>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  startIcon={<TrendingUpIcon />}
-                  sx={{ py: 1.5 }}
-                >
-                  Career Coaching
-                </Button>
+              <Button
+                fullWidth
+                variant="outlined"
+                startIcon={<TrendingUpIcon />}
+                sx={{ py: 1.5 }}
+                onClick={() => navigate('/career')}
+              >
+                Career Coaching
+              </Button>
               </Grid>
               
               <Grid item xs={12} sm={6} md={3}>

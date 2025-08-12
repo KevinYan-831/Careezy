@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 const Resume = require('../models/Resume');
 const { authenticateToken, AuthRequest } = require('../middleware/auth');
 const { generateLatexResume, generateCustomLatexResume } = require('../services/latexService');
@@ -89,12 +90,26 @@ router.get('/pdf', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Resume not found' });
     }
 
-    // Here you would integrate with a LaTeX to PDF service
-    // For now, return the LaTeX code
-    res.json({ latexCode: resume.latexCode });
+    // Compile LaTeX to PDF using rtex public API
+    const compileResp = await axios.post('https://rtex.probablyaweb.site/api/v2', {
+      code: resume.latexCode,
+      format: 'pdf',
+      compiler: 'pdflatex'
+    }, { timeout: 20000 });
+
+    const pdfUrl = compileResp.data?.file;
+    if (!pdfUrl) {
+      const err = compileResp.data?.error || 'Compilation failed';
+      return res.status(400).json({ message: `LaTeX compilation error: ${err}` });
+    }
+
+    const pdfResp = await axios.get(pdfUrl, { responseType: 'arraybuffer', timeout: 20000 });
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="resume.pdf"');
+    return res.send(Buffer.from(pdfResp.data));
   } catch (error) {
-    console.error('Generate PDF error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Generate PDF error:', error?.response?.data || error?.message || error);
+    res.status(500).json({ message: 'Error generating PDF' });
   }
 });
 

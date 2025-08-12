@@ -130,14 +130,32 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Create internship (admin only - for demo purposes)
-router.post('/', async (req, res) => {
+// Create internship (admin only)
+router.post('/', authenticateToken, async (req, res) => {
   try {
+    if (req.user?.role !== 'admin' && req.user?.role !== 'super_admin') {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
     const internship = new Internship(req.body);
     await internship.save();
     res.status(201).json(internship);
   } catch (error) {
     console.error('Create internship error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Delete internship (admin only)
+router.delete('/:id', authenticateToken, async (req, res) => {
+  try {
+    if (req.user?.role !== 'admin' && req.user?.role !== 'super_admin') {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+    const deleted = await Internship.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: 'Not found' });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Delete internship error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

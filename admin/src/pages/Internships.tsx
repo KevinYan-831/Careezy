@@ -41,11 +41,45 @@ interface Internship {
   applicationsCount: number;
 }
 
+const initialForm: Partial<Internship> = {
+  title: '',
+  company: '',
+  location: '',
+  field: '',
+  experienceLevel: '',
+  remote: false,
+  isActive: true,
+  applicationDeadline: new Date().toISOString(),
+};
+  const handleDelete = async (id: string) => {
+    try {
+      await axios.delete(`/api/internships/${id}`);
+      fetchInternships();
+    } catch (e) {
+      console.error('Failed to delete internship', e);
+    }
+  };
+
+interface Internship {
+  _id: string;
+  title: string;
+  company: string;
+  location: string;
+  remote: boolean;
+  experienceLevel: string;
+  field: string;
+  applicationDeadline: string;
+  isActive: boolean;
+  applicationsCount: number;
+}
+
 const Internships: React.FC = () => {
   const [internships, setInternships] = useState<Internship[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedInternship, setSelectedInternship] = useState<Internship | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [form, setForm] = useState<Partial<Internship>>(initialForm);
 
   useEffect(() => {
     fetchInternships();
@@ -53,46 +87,21 @@ const Internships: React.FC = () => {
 
   const fetchInternships = async () => {
     try {
-      // Mock data for now - replace with actual API call
-      const mockInternships: Internship[] = [
-        {
-          _id: '1',
-          title: 'Software Engineer Intern',
-          company: 'TechCorp',
-          location: 'San Francisco, CA',
-          remote: false,
-          experienceLevel: 'Entry Level',
-          field: 'Technology',
-          applicationDeadline: '2024-06-30',
-          isActive: true,
-          applicationsCount: 45,
-        },
-        {
-          _id: '2',
-          title: 'Marketing Intern',
-          company: 'StartupXYZ',
-          location: 'Remote',
-          remote: true,
-          experienceLevel: 'Entry Level',
-          field: 'Marketing',
-          applicationDeadline: '2024-07-15',
-          isActive: true,
-          applicationsCount: 23,
-        },
-        {
-          _id: '3',
-          title: 'Data Science Intern',
-          company: 'DataCorp',
-          location: 'New York, NY',
-          remote: false,
-          experienceLevel: 'Intermediate',
-          field: 'Data Science',
-          applicationDeadline: '2024-05-20',
-          isActive: false,
-          applicationsCount: 67,
-        },
-      ];
-      setInternships(mockInternships);
+      const res = await axios.get('/api/internships');
+      const data: any[] = res.data?.internships || [];
+      const normalized: Internship[] = data.map((i) => ({
+        _id: i._id,
+        title: i.title,
+        company: i.company,
+        location: i.location,
+        remote: !!i.remote,
+        experienceLevel: i.experienceLevel,
+        field: i.field,
+        applicationDeadline: i.applicationDeadline || i.deadline || new Date().toISOString(),
+        isActive: !!i.isActive,
+        applicationsCount: i.applicationsCount || 0,
+      }));
+      setInternships(normalized);
     } catch (error) {
       console.error('Error fetching internships:', error);
     }
@@ -129,6 +138,7 @@ const Internships: React.FC = () => {
           variant="contained"
           startIcon={<AddIcon />}
           color="primary"
+          onClick={() => { setForm(initialForm); setEditDialogOpen(true); }}
         >
           Add Internship
         </Button>
@@ -208,10 +218,10 @@ const Internships: React.FC = () => {
                   >
                     <VisibilityIcon />
                   </IconButton>
-                  <IconButton size="small" color="secondary">
+                  <IconButton size="small" color="secondary" onClick={() => handleViewInternship(internship)}>
                     <EditIcon />
                   </IconButton>
-                  <IconButton size="small" color="error">
+                  <IconButton size="small" color="error" onClick={() => handleDelete(internship._id)}>
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>
@@ -264,6 +274,27 @@ const Internships: React.FC = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Add Internship Dialog */}
+      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Add Internship</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'grid', gap: 2, mt: 1 }}>
+            <TextField label="Title" value={form.title || ''} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+            <TextField label="Company" value={form.company || ''} onChange={(e) => setForm({ ...form, company: e.target.value })} />
+            <TextField label="Location" value={form.location || ''} onChange={(e) => setForm({ ...form, location: e.target.value })} />
+            <TextField label="Field" value={form.field || ''} onChange={(e) => setForm({ ...form, field: e.target.value })} />
+            <TextField label="Experience Level" value={form.experienceLevel || ''} onChange={(e) => setForm({ ...form, experienceLevel: e.target.value })} />
+            <TextField label="Application Deadline" value={form.applicationDeadline || ''} onChange={(e) => setForm({ ...form, applicationDeadline: e.target.value })} />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={async () => {
+            try { await axios.post('/api/internships', form); setEditDialogOpen(false); fetchInternships(); } catch (e) { console.error('Create failed', e); }
+          }}>Save</Button>
         </DialogActions>
       </Dialog>
     </Box>

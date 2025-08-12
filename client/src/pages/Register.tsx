@@ -107,6 +107,11 @@ const Register: React.FC = () => {
       
       // Store token in localStorage
       localStorage.setItem('token', response.data.token);
+      try {
+        const payload = JSON.parse(atob(response.data.token.split('.')[1]));
+        const expMs = (payload.exp || 0) * 1000;
+        localStorage.setItem('token_exp', String(expMs));
+      } catch {}
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
       // Redirect based on profile type
@@ -384,6 +389,11 @@ const Register: React.FC = () => {
                       if (!credentialResponse.credential) throw new Error('No credential received');
                       const resp = await axios.post('/api/auth/google', { idToken: credentialResponse.credential });
                       localStorage.setItem('token', resp.data.token);
+                      try {
+                        const payload = JSON.parse(atob(resp.data.token.split('.')[1]));
+                        const expMs = (payload.exp || 0) * 1000;
+                        localStorage.setItem('token_exp', String(expMs));
+                      } catch {}
                       localStorage.setItem('user', JSON.stringify(resp.data.user));
                       window.location.href = '/dashboard';
                     } catch (e: any) {

@@ -43,6 +43,7 @@ const Users: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
   const { token } = useAuth();
 
   useEffect(() => {
@@ -160,10 +161,16 @@ const Users: React.FC = () => {
                   >
                     <VisibilityIcon />
                   </IconButton>
-                  <IconButton size="small" color="secondary">
+                  <IconButton size="small" color="secondary" onClick={() => handleViewUser(user)}>
                     <EditIcon />
                   </IconButton>
-                  <IconButton size="small" color="error">
+                  <IconButton size="small" color="error" onClick={async () => {
+                    try {
+                      if (!token) return;
+                      await axios.delete(`/api/admin/users/${user._id}`, { headers: { Authorization: `Bearer ${token}` } });
+                      fetchUsers();
+                    } catch (e) { console.error('Failed to delete user', e); }
+                  }}>
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>
@@ -178,31 +185,62 @@ const Users: React.FC = () => {
         <DialogTitle>User Details</DialogTitle>
         <DialogContent>
           {selectedUser && (
-            <Box sx={{ pt: 2 }}>
-              <Typography variant="h6" gutterBottom>
-                {selectedUser.firstName} {selectedUser.lastName}
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Email:</strong> {selectedUser.email}
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Profile Type:</strong> {selectedUser.profileType}
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Join Date:</strong> {formatDate(selectedUser.joinDate)}
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Status:</strong>{' '}
-                <Chip
-                  label={selectedUser.isActive ? 'Active' : 'Inactive'}
-                  color={selectedUser.isActive ? 'success' : 'default'}
-                  size="small"
-                />
-              </Typography>
+            <Box sx={{ pt: 2, display: 'grid', gap: 2 }}>
+              <TextField
+                label="First Name"
+                value={selectedUser.firstName}
+                onChange={(e) => setSelectedUser({ ...selectedUser, firstName: e.target.value })}
+                disabled={!editMode}
+              />
+              <TextField
+                label="Last Name"
+                value={selectedUser.lastName}
+                onChange={(e) => setSelectedUser({ ...selectedUser, lastName: e.target.value })}
+                disabled={!editMode}
+              />
+              <TextField
+                label="Email"
+                value={selectedUser.email}
+                onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })}
+                disabled={!editMode}
+              />
+              <TextField
+                label="Profile Type"
+                value={selectedUser.profileType}
+                onChange={(e) => setSelectedUser({ ...selectedUser, profileType: e.target.value })}
+                disabled={!editMode}
+              />
+              <Typography variant="body2">Join Date: {formatDate(selectedUser.joinDate)}</Typography>
             </Box>
           )}
         </DialogContent>
         <DialogActions>
+          {editMode ? (
+            <Button
+              variant="contained"
+              onClick={async () => {
+                if (!selectedUser) return;
+                try {
+                  if (!token) return;
+                  await axios.put(`/api/admin/users/${selectedUser._id}`,
+                    {
+                      firstName: selectedUser.firstName,
+                      lastName: selectedUser.lastName,
+                      email: selectedUser.email,
+                      profileType: selectedUser.profileType,
+                    },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                  );
+                  setEditMode(false);
+                  fetchUsers();
+                } catch (e) {
+                  console.error('Failed to update user', e);
+                }
+              }}
+            >Save</Button>
+          ) : (
+            <Button onClick={() => setEditMode(true)} startIcon={<EditIcon />}>Edit</Button>
+          )}
           <Button onClick={handleCloseDialog}>Close</Button>
         </DialogActions>
       </Dialog>
