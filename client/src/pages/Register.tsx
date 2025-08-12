@@ -385,11 +385,7 @@ const Register: React.FC = () => {
                       const resp = await axios.post('/api/auth/google', { idToken: credentialResponse.credential });
                       localStorage.setItem('token', resp.data.token);
                       localStorage.setItem('user', JSON.stringify(resp.data.user));
-                      if (resp.data.user.profileType === 'freshman') {
-                        navigate('/resume?onboarding=true');
-                      } else {
-                        navigate('/dashboard');
-                      }
+                      window.location.href = '/dashboard';
                     } catch (e: any) {
                       setError(e.response?.data?.message || 'Google sign-in failed. Please try again.');
                     }

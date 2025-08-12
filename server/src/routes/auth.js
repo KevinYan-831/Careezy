@@ -137,21 +137,55 @@ router.post('/google', async (req, res) => {
       return res.status(400).json({ message: 'Missing Google ID token' });
     }
 
-    const ticket = await googleClient.verifyIdToken({
-      idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
+    // Helper to decode without remote verification (DEV ONLY)
+    const decodeJwtPayload = (token) => {
+      const parts = String(token).split('.');
+      if (parts.length !== 3) {
+        throw new Error('Malformed ID token');
+      }
+      const payloadJson = Buffer.from(parts[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
+      return JSON.parse(payloadJson);
+    };
+
+    let payload = {};
+    const useDevBypass = String(process.env.GOOGLE_VERIFY_DEV || '').toLowerCase() === 'true';
+
+    if (useDevBypass) {
+      try {
+        payload = decodeJwtPayload(idToken);
+      } catch (e) {
+        return res.status(400).json({ message: `Invalid Google ID token (decode): ${e?.message || 'decode failed'}` });
+      }
+    } else {
+      try {
+        // Add an explicit timeout so requests don't hang forever in restricted networks
+        const verifyPromise = googleClient.verifyIdToken({ idToken, audience: process.env.GOOGLE_CLIENT_ID });
+        const ticket = await Promise.race([
+          verifyPromise,
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Google verification timeout')), 10000)),
+        ]);
+        payload = ticket.getPayload() || {};
+      } catch (verifyErr) {
+        console.error('Google ID token verify failed:', verifyErr?.message || verifyErr);
+        return res.status(400).json({ message: `Invalid Google ID token: ${verifyErr?.message || 'verification failed'}` });
+      }
+    }
+
     const normalizedEmail = (payload.email || '').trim().toLowerCase();
 
     if (!payload.email_verified) {
       return res.status(400).json({ message: 'Google account email not verified' });
     }
+    if (!normalizedEmail) {
+      return res.status(400).json({ message: 'No email provided by Google' });
+    }
+    if (payload.aud && payload.aud !== process.env.GOOGLE_CLIENT_ID) {
+      return res.status(400).json({ message: 'Google token audience mismatch' });
+    }
 
     let user = await User.findOne({ email: normalizedEmail });
 
     if (!user) {
-      // Create user with a random password since password is required by schema
       const randomPassword = `${Math.random().toString(36).slice(2)}!A1`;
       const hashedPassword = await bcrypt.hash(randomPassword, 12);
       user = new User({
@@ -171,7 +205,7 @@ router.post('/google', async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    res.json({
+    return res.json({
       message: 'Login successful',
       token,
       user: {
@@ -184,8 +218,8 @@ router.post('/google', async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Google login error:', error);
-    res.status(500).json({ message: 'Server error during Google login' });
+    console.error('Google login error (outer):', error);
+    return res.status(500).json({ message: `Server error during Google login: ${error?.message || 'unknown error'}` });
   }
 });
 

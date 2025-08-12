@@ -182,7 +182,7 @@ const Login: React.FC = () => {
                     const resp = await axios.post('/api/auth/google', { idToken: credentialResponse.credential });
                     localStorage.setItem('token', resp.data.token);
                     localStorage.setItem('user', JSON.stringify(resp.data.user));
-                    navigate('/dashboard');
+                    window.location.href = '/dashboard';
                   } catch (e: any) {
                     setError(e.response?.data?.message || 'Google login failed. Please try again.');
                   }
